@@ -9,6 +9,7 @@ import { DesignPanel } from './DesignPanel';
 import { ResumePreview } from './ResumePreview';
 import { Icon } from '../../components/ui/Icon';
 import { runResumeChecks, type Finding } from '../../services/quality/checks';
+import { runWritingChecks, type WritingFinding } from '../../services/quality/writing';
 import { resumeToText } from '../../services/exports/text';
 import { buildBackup, download, safeFilename } from '../../services/exports/backup';
 import { resumeToDocxBlob, downloadBlob } from '../../services/exports/docx';
@@ -55,6 +56,7 @@ export function ResumeStudio() {
   const [showChecks, setShowChecks] = useState(false);
   const [showExport, setShowExport] = useState(false);
   const [showVersions, setShowVersions] = useState(false);
+  const [showWriting, setShowWriting] = useState(false);
   const [compareSnap, setCompareSnap] = useState<ResumeSnapshot | null>(null);
   const [editing, setEditing] = useState(false);
   const [busy, setBusy] = useState<string | null>(null);
@@ -149,6 +151,8 @@ export function ResumeStudio() {
 
   const findings: Finding[] = useMemo(() => (project ? runResumeChecks(project.data) : []), [project]);
   const issueCount = findings.filter((f) => f.id !== 'ok').length;
+  const writingFindings: WritingFinding[] = useMemo(() => (project ? runWritingChecks(project.data) : []), [project]);
+  const writingCount = writingFindings.filter((f) => f.id !== 'ok').length;
 
   const setTitle = (title: string) => setProject((p) => {
     if (!p) return p;
@@ -257,6 +261,9 @@ export function ResumeStudio() {
         <button className="btn btn-sm" onClick={() => setShowChecks(true)}>
           <Icon name={issueCount ? 'alert' : 'check'} size={15} /> Checks{issueCount ? ` (${issueCount})` : ''}
         </button>
+        <button className="btn btn-sm" onClick={() => setShowWriting(true)} title="Rule-based writing suggestions">
+          <Icon name="file" size={15} /> Writing{writingCount ? ` (${writingCount})` : ''}
+        </button>
         <button className="btn btn-sm btn-ghost" onClick={() => setShowVersions(true)} title="Version snapshots">
           <Icon name="copy" size={15} /> Versions{project.data.snapshots.length ? ` (${project.data.snapshots.length})` : ''}
         </button>
@@ -322,6 +329,29 @@ export function ResumeStudio() {
                     <Icon name={f.severity === 'error' ? 'alert' : f.severity === 'warning' ? 'alert' : f.id === 'ok' ? 'check' : 'info'} size={17} />
                   </span>
                   <div>
+                    <div style={{ fontSize: 13.5, fontWeight: 600 }}>{f.message}</div>
+                    {f.hint && <div className="muted" style={{ fontSize: 12.5 }}>{f.hint}</div>}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Writing assistant drawer */}
+      {showWriting && (
+        <div role="dialog" aria-modal="true" aria-label="Writing suggestions" className="no-print" onClick={() => setShowWriting(false)}
+          style={{ position: 'fixed', inset: 0, background: 'rgba(15,23,42,0.4)', zIndex: 90, display: 'flex', justifyContent: 'flex-end' }}>
+          <div className="card" onClick={(e) => e.stopPropagation()} style={{ width: 'min(440px, 100%)', height: '100%', borderRadius: 0, overflow: 'auto' }}>
+            <div className="panel-head">Writing assistant <span className="spacer" /><button className="btn btn-sm btn-ghost btn-icon" aria-label="Close" onClick={() => setShowWriting(false)}><Icon name="x" /></button></div>
+            <div className="panel-pad">
+              <p className="muted" style={{ marginTop: 0, fontSize: 13 }}>Rule-based suggestions, computed locally — no AI, nothing is sent anywhere. Guidance only; it never rewrites your words or invents facts.</p>
+              {writingFindings.map((f) => (
+                <div key={f.id} className="entry" style={{ display: 'flex', gap: 10 }}>
+                  <span className={`sev-${f.severity}`} style={{ marginTop: 1 }}><Icon name={f.severity === 'warning' ? 'alert' : f.id === 'ok' ? 'check' : 'info'} size={16} /></span>
+                  <div>
+                    {f.where && <div className="faint" style={{ fontSize: 11.5, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.04em' }}>{f.where}</div>}
                     <div style={{ fontSize: 13.5, fontWeight: 600 }}>{f.message}</div>
                     {f.hint && <div className="muted" style={{ fontSize: 12.5 }}>{f.hint}</div>}
                   </div>

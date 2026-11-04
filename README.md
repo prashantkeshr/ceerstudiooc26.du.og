@@ -5,10 +5,12 @@ browser. One reusable **Career Profile** feeds many documents; a shared design
 system keeps them consistent; everything is stored locally and nothing is
 uploaded to any server.
 
-> **Status: Phases 1–5 complete and runnable.**
-> This is an honest, incremental build. Remaining work (standalone image/asset
-> studio, optional AI assistance) is scaffolded in the feature registry as
-> **Coming soon** and is *not* faked in the UI. See [Roadmap](#roadmap).
+> **Status: Phases 1–5 complete, plus the Phase-5 follow-ups (image/asset studio,
+> writing assistant, automated tests).**
+> This is an honest, incremental build. The few remaining items (localization,
+> an optional *external* AI provider, Playwright e2e) are scaffolded in the
+> feature registry as **Coming soon** and are *not* faked in the UI. See
+> [Roadmap](#roadmap).
 
 ---
 
@@ -41,12 +43,16 @@ uploaded to any server.
 | Portfolio Studio | ✅ Available | Reusable projects with images (auto-resized); live on your Career Profile, feed any website. |
 | Website Studio | ✅ Available | No-code builder: hero/about/sections, 3 templates, theme, SEO. Live preview renders the real generated HTML. |
 | Static website export (ZIP) | ✅ Available | Self-contained `index.html` + CSS/JS + assets + `sitemap.xml` / `robots.txt` / `README`; runs with no backend (JSZip). |
+| Writing assistant | ✅ Available | Rule-based suggestions (weak openers, filler, passive, first-person, missing metrics) — local, no AI. |
+| Image & Asset Studio | ✅ Available | Upload, organise, search & edit images (crop, rotate, flip, resize, round corners, compress); stored in IndexedDB. |
+| Automated tests | ✅ Available | Vitest unit suite for the core logic (`npm test`). |
 | Responsive + light/dark | ✅ Available | Three-panel desktop; tabbed panes on mobile. |
 
-**Not yet built (shown honestly as "Coming soon" in-app):** standalone
-image/asset studio and optional AI writing assistance. Automatic cloud
-publishing is intentionally **Not supported** — there is no backend (export the
-ZIP and self-host).
+**Not yet built (shown honestly as "Coming soon" in-app):** localization (i18n),
+an optional *external* AI writing provider (the rule-based writing assistant
+ships today), and Playwright end-to-end tests. Automatic cloud publishing is
+intentionally **Not supported** — there is no backend (export the ZIP and
+self-host).
 
 `docx` and `mammoth` are **code-split** (dynamic import) so they load only when
 you export or import a Word file, keeping the initial bundle small (~80 kB gzip).
@@ -84,16 +90,18 @@ npm run build      # typecheck (tsc --noEmit) + vite build  →  dist/
 npm run preview    # serve the built dist/ locally
 ```
 
-## Typecheck
+## Typecheck & test
 
 ```bash
 npm run typecheck
+npm test          # Vitest unit suite (25 tests across core logic)
 ```
 
-> **Tests:** automated unit/e2e tests are planned for Phase 2 (the spec calls for
-> Vitest + Playwright). Phase 1 was verified manually against the full
-> create → edit → template → customize → preview → save → export workflow. No
-> test suite is claimed to pass because none ships yet.
+> **Tests:** a Vitest unit suite (`src/__tests__/`) covers the pure core logic —
+> factory & schema migrations, resume/website/import data models, the version
+> diff, quality and writing checks, text/website export, and backup parsing.
+> Browser-dependent paths (PDF/DOCX/OCR rendering, canvas image editing) are
+> verified in-browser; Playwright end-to-end tests are still planned.
 
 ## Deploy to GitHub Pages (or any static host)
 
@@ -199,7 +207,10 @@ src/
   generated HTML, and self-contained static ZIP export.
 - **Phase 5 — done:** cover letter builder (PDF/DOCX/TXT), resume version
   comparison (content diff), and PWA/offline support (service worker + installable).
-- **Later:** standalone image/asset studio, localization, optional AI integrations.
+- **Phase 5 follow-ups — done:** Image & Asset Studio (upload/organise/edit),
+  a rule-based writing assistant, and a Vitest unit-test suite.
+- **Later:** localization (i18n), an optional external AI provider (with explicit
+  data-disclosure), and Playwright end-to-end tests.
 
 Features are promoted from "Coming soon" to "Available" only after they are
 implemented and tested.

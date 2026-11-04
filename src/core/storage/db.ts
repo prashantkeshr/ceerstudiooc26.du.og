@@ -1,5 +1,5 @@
 import { openDB, type IDBPDatabase } from 'idb';
-import type { CareerProfile, ProjectEnvelope } from '../models/types';
+import type { CareerProfile, ProjectEnvelope, StoredAsset } from '../models/types';
 
 // ---------------------------------------------------------------------------
 // IndexedDB is used for all substantial data (the profile and projects).
@@ -9,9 +9,10 @@ import type { CareerProfile, ProjectEnvelope } from '../models/types';
 // ---------------------------------------------------------------------------
 
 const DB_NAME = 'career-studio';
-const DB_VERSION = 1;
+const DB_VERSION = 2;
 const PROFILE_STORE = 'profiles';
 const PROJECT_STORE = 'projects';
+const ASSET_STORE = 'assets';
 
 let dbPromise: Promise<IDBPDatabase> | null = null;
 
@@ -30,6 +31,10 @@ function getDB(): Promise<IDBPDatabase> {
         if (!db.objectStoreNames.contains(PROJECT_STORE)) {
           const store = db.createObjectStore(PROJECT_STORE, { keyPath: 'id' });
           store.createIndex('updatedAt', 'updatedAt');
+        }
+        if (!db.objectStoreNames.contains(ASSET_STORE)) {
+          const store = db.createObjectStore(ASSET_STORE, { keyPath: 'id' });
+          store.createIndex('createdAt', 'createdAt');
         }
       },
     }).catch((err) => {
@@ -83,6 +88,24 @@ export async function saveProject(project: ProjectEnvelope): Promise<void> {
 export async function deleteProject(id: string): Promise<void> {
   const db = await getDB();
   await db.delete(PROJECT_STORE, id);
+}
+
+// --- Assets -------------------------------------------------------------
+
+export async function listAssets(): Promise<StoredAsset[]> {
+  const db = await getDB();
+  const all = (await db.getAll(ASSET_STORE)) as StoredAsset[];
+  return all.sort((a, b) => b.createdAt - a.createdAt);
+}
+
+export async function saveAsset(asset: StoredAsset): Promise<void> {
+  const db = await getDB();
+  await db.put(ASSET_STORE, asset);
+}
+
+export async function deleteAsset(id: string): Promise<void> {
+  const db = await getDB();
+  await db.delete(ASSET_STORE, id);
 }
 
 /** Replace the entire dataset (used by backup restore). */

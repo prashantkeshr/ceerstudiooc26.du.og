@@ -223,6 +223,19 @@ export interface CoverLetterData {
 
 export type CoverLetterProject = ProjectEnvelope<CoverLetterData> & { type: 'cover-letter' };
 
+// --- Image assets -------------------------------------------------------
+
+export interface StoredAsset {
+  id: ID;
+  name: string;
+  dataUrl: string;
+  width: number;
+  height: number;
+  size: number; // bytes (approx, from the data URL)
+  alt: string;
+  createdAt: number;
+}
+
 export interface ProjectEnvelope<T = unknown> {
   id: ID;
   type: ProjectType;
