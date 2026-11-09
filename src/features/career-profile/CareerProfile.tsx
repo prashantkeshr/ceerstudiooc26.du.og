@@ -21,7 +21,7 @@ export function CareerProfilePage() {
             <h1>Career Profile</h1>
             <p>Your master information. Resumes and other documents reuse it — edit once, use everywhere.</p>
           </div>
-          <span className="save-pill"><span className={`save-dot ${profileSave}`} />{saveText}</span>
+          <span className="save-pill" role="status" aria-live="polite"><span className={`save-dot ${profileSave}`} />{saveText}</span>
         </div>
       </div>
 

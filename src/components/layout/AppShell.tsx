@@ -9,6 +9,7 @@ export function AppShell({ children }: { children: ReactNode }) {
 
   return (
     <div className="app">
+      <a className="skip-link" href="#main">Skip to content</a>
       <header className="topbar no-print">
         <button
           className="btn btn-icon btn-ghost nav-toggle"
@@ -49,7 +50,7 @@ export function AppShell({ children }: { children: ReactNode }) {
         </button>
       </header>
 
-      <main>{children}</main>
+      <main id="main">{children}</main>
     </div>
   );
 }

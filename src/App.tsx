@@ -1,6 +1,8 @@
 import { lazy, Suspense } from 'react';
-import { Routes, Route, Navigate } from 'react-router-dom';
+import { Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import { AppShell } from './components/layout/AppShell';
+import { ErrorBoundary } from './components/ErrorBoundary';
+import { UpdateToast } from './components/UpdateToast';
 import { Dashboard } from './features/dashboard/Dashboard';
 import { CareerProfilePage } from './features/career-profile/CareerProfile';
 import { ResumeStudio } from './features/resume-studio/ResumeStudio';
@@ -15,6 +17,7 @@ const PdfStudio = lazy(() => import('./features/pdf-studio/PdfStudio').then((m) 
 
 export function App() {
   const { ready } = useStore();
+  const location = useLocation();
   return (
     <AppShell>
       {!ready ? (
@@ -22,18 +25,22 @@ export function App() {
           <p className="muted">Loading your workspace…</p>
         </div>
       ) : (
-        <Routes>
-          <Route path="/" element={<Dashboard />} />
-          <Route path="/profile" element={<CareerProfilePage />} />
-          <Route path="/resume/:id" element={<ResumeStudio />} />
-          <Route path="/portfolio" element={<PortfolioStudio />} />
-          <Route path="/website/:id" element={<WebsiteStudio />} />
-          <Route path="/cover-letter/:id" element={<CoverLetterStudio />} />
-          <Route path="/assets" element={<AssetStudio />} />
-          <Route path="/pdf" element={<Suspense fallback={<div className="content" style={{ paddingTop: 60, textAlign: 'center' }}><p className="muted">Loading PDF Studio…</p></div>}><PdfStudio /></Suspense>} />
-          <Route path="*" element={<Navigate to="/" replace />} />
-        </Routes>
+        // Key by path so an error on one screen clears when navigating away.
+        <ErrorBoundary key={location.pathname}>
+          <Routes>
+            <Route path="/" element={<Dashboard />} />
+            <Route path="/profile" element={<CareerProfilePage />} />
+            <Route path="/resume/:id" element={<ResumeStudio />} />
+            <Route path="/portfolio" element={<PortfolioStudio />} />
+            <Route path="/website/:id" element={<WebsiteStudio />} />
+            <Route path="/cover-letter/:id" element={<CoverLetterStudio />} />
+            <Route path="/assets" element={<AssetStudio />} />
+            <Route path="/pdf" element={<Suspense fallback={<div className="content" style={{ paddingTop: 60, textAlign: 'center' }}><p className="muted">Loading PDF Studio…</p></div>}><PdfStudio /></Suspense>} />
+            <Route path="*" element={<Navigate to="/" replace />} />
+          </Routes>
+        </ErrorBoundary>
       )}
+      <UpdateToast />
     </AppShell>
   );
 }

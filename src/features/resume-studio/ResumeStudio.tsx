@@ -16,6 +16,7 @@ import { resumeToDocxBlob, downloadBlob } from '../../services/exports/docx';
 import { newResumeProject, uid } from '../../core/models/factory';
 import { migrateProject } from '../../core/migrations/migrate';
 import { diffContent } from '../../services/compare/diff';
+import { useEscape } from '../../hooks/useEscape';
 
 /** Keep sectionOrder/hiddenSections consistent and ensure v2 fields exist. */
 function normalize(data: ResumeData): ResumeData {
@@ -149,6 +150,9 @@ export function ResumeStudio() {
     return () => window.removeEventListener('keydown', onKey);
   }, [undo, redo]);
 
+  const anyOverlay = showChecks || showWriting || showVersions || showExport || compareSnap !== null;
+  useEscape(anyOverlay, () => { setShowChecks(false); setShowWriting(false); setShowVersions(false); setShowExport(false); setCompareSnap(null); });
+
   const findings: Finding[] = useMemo(() => (project ? runResumeChecks(project.data) : []), [project]);
   const issueCount = findings.filter((f) => f.id !== 'ok').length;
   const writingFindings: WritingFinding[] = useMemo(() => (project ? runWritingChecks(project.data) : []), [project]);
@@ -251,7 +255,7 @@ export function ResumeStudio() {
           onChange={(e) => setTitle(e.target.value)}
           aria-label="Resume title"
         />
-        <span className="save-pill"><span className={`save-dot ${save}`} />{busy ?? saveText}</span>
+        <span className="save-pill" role="status" aria-live="polite"><span className={`save-dot ${save}`} />{busy ?? saveText}</span>
         <span className="spacer" />
         <button className={`btn btn-sm ${editing ? 'btn-primary' : ''}`} onClick={() => { setEditing((v) => !v); setPane('preview'); }} aria-pressed={editing} title="Edit text directly on the page">
           <Icon name={editing ? 'check' : 'file'} size={15} /> {editing ? 'Editing' : 'Edit on page'}

@@ -12,7 +12,8 @@ export default defineConfig({
   plugins: [
     react(),
     VitePWA({
-      registerType: 'autoUpdate',
+      registerType: 'prompt',
+      injectRegister: false, // registered manually in UpdateToast for the prompt UI
       includeAssets: ['icon.svg'],
       manifest: {
         name: 'Universal Career Studio',

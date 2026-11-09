@@ -3,6 +3,7 @@ import { extractDocx, buildContentFromExtraction, type ExtractedDoc, type Sectio
 import { extractPdfText, extractPdfViaOcr } from '../../services/imports/pdfImport';
 import { newResumeProject } from '../../core/models/factory';
 import { useStore } from '../../state/store';
+import { useEscape } from '../../hooks/useEscape';
 import { Icon } from '../../components/ui/Icon';
 
 const KEY_OPTIONS: SectionKeyGuess[] = ['summary', 'experience', 'education', 'skills', 'projects', 'certifications', 'custom'];
@@ -25,10 +26,12 @@ export function ImportModal({ source, open, onClose, onCreated }: { source: Sour
   const lastFile = useRef<File | null>(null);
   const fileRef = useRef<HTMLInputElement>(null);
 
-  if (!open) return null;
-
   const reset = () => { setStep('pick'); setDoc(null); setError(null); setProgress(null); setScanned(false); lastFile.current = null; };
   const close = () => { reset(); setUseOcr(false); onClose(); };
+
+  useEscape(open, close);
+
+  if (!open) return null;
 
   const run = async (file: File, ocr: boolean) => {
     setError(null);

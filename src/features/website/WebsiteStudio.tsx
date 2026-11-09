@@ -100,7 +100,7 @@ export function WebsiteStudio() {
       <div className="panel-head no-print" style={{ position: 'sticky', top: 53, gap: 10 }}>
         <Link className="btn btn-sm btn-ghost btn-icon" to="/" aria-label="Back"><Icon name="home" /></Link>
         <input className="input" style={{ maxWidth: 300, fontWeight: 600 }} value={project.title} onChange={(e) => setTitle(e.target.value)} aria-label="Website title" />
-        <span className="save-pill"><span className={`save-dot ${save}`} />{busy ?? saveText}</span>
+        <span className="save-pill" role="status" aria-live="polite"><span className={`save-dot ${save}`} />{busy ?? saveText}</span>
         <span className="spacer" />
         <div className="seg" role="group" aria-label="Preview device">
           {(Object.keys(DEVICES) as Device[]).map((dv) => <button key={dv} className={device === dv ? 'active' : ''} onClick={() => setDevice(dv)} style={{ textTransform: 'capitalize' }}>{dv}</button>)}

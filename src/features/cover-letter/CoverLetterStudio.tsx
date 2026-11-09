@@ -113,7 +113,7 @@ export function CoverLetterStudio() {
       <div className="panel-head no-print" style={{ position: 'sticky', top: 53, gap: 10 }}>
         <Link className="btn btn-sm btn-ghost btn-icon" to="/" aria-label="Back"><Icon name="home" /></Link>
         <input className="input" style={{ maxWidth: 300, fontWeight: 600 }} value={project.title} onChange={(e) => setTitle(e.target.value)} aria-label="Cover letter title" />
-        <span className="save-pill"><span className={`save-dot ${save}`} />{busy ?? saveText}</span>
+        <span className="save-pill" role="status" aria-live="polite"><span className={`save-dot ${save}`} />{busy ?? saveText}</span>
         <span className="spacer" />
         <div style={{ position: 'relative' }}>
           <button className="btn btn-sm btn-primary" onClick={() => setShowExport((s) => !s)}><Icon name="download" size={15} /> Export</button>
