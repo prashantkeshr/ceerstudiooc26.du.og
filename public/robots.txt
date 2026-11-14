@@ -1,0 +1,6 @@
+# Career Studio — https://careerstudio.dhurta.org/
+# A privacy-first, frontend-only web app. All data stays in the visitor's browser.
+User-agent: *
+Allow: /
+
+Sitemap: https://careerstudio.dhurta.org/sitemap.xml

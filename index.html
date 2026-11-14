@@ -3,14 +3,94 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="description" content="Universal Career Studio — create resumes, CVs, and career documents in your browser. Private, offline-capable, no account required." />
+
+    <!-- Primary SEO -->
+    <title>Career Studio — Free Resume, CV, Cover Letter & Website Builder</title>
+    <meta
+      name="description"
+      content="Build professional resumes, CVs, cover letters, portfolios and personal websites free in your browser. 6 templates, PDF & DOCX export, PDF tools — fully private, no sign-up."
+    />
+    <meta
+      name="keywords"
+      content="resume builder, free resume maker, CV builder, cover letter generator, portfolio builder, personal website builder, PDF resume, DOCX resume, ATS resume, online resume, career studio"
+    />
+    <meta name="author" content="Dhurta.Org" />
+    <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" />
     <meta name="theme-color" content="#2563eb" />
-    <link rel="icon" type="image/svg+xml" href="icon.svg" />
-    <link rel="apple-touch-icon" href="icon.svg" />
-    <title>Universal Career Studio</title>
+    <link rel="canonical" href="https://careerstudio.dhurta.org/" />
+
+    <!-- Icons / PWA -->
+    <link rel="icon" type="image/svg+xml" href="/icon.svg" />
+    <link rel="apple-touch-icon" href="/icon.svg" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-title" content="Career Studio" />
+
+    <!-- Open Graph -->
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="Career Studio" />
+    <meta property="og:title" content="Career Studio — Free Resume, CV, Cover Letter & Website Builder" />
+    <meta property="og:description" content="Build professional resumes, CVs, cover letters, portfolios and personal websites free in your browser — private, offline-capable, no account required." />
+    <meta property="og:url" content="https://careerstudio.dhurta.org/" />
+    <meta property="og:image" content="https://careerstudio.dhurta.org/og-image.svg" />
+    <meta property="og:locale" content="en_US" />
+
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Career Studio — Free Resume, CV & Website Builder" />
+    <meta name="twitter:description" content="Build resumes, CVs, cover letters, portfolios and websites free in your browser. Private, offline-capable, no sign-up." />
+    <meta name="twitter:image" content="https://careerstudio.dhurta.org/og-image.svg" />
+
+    <!-- Structured data: software application -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebApplication",
+      "name": "Career Studio",
+      "alternateName": "Universal Career Studio",
+      "url": "https://careerstudio.dhurta.org/",
+      "description": "A privacy-first, frontend-only platform to create resumes, CVs, cover letters, portfolios and personal websites in the browser.",
+      "applicationCategory": "BusinessApplication",
+      "operatingSystem": "Any (web browser)",
+      "browserRequirements": "Requires JavaScript",
+      "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
+      "publisher": { "@type": "Organization", "name": "Dhurta.Org", "url": "https://dhurta.org/" },
+      "featureList": [
+        "Resume & CV builder with 6 templates",
+        "Cover letter builder",
+        "Portfolio and no-code website builder with static export",
+        "PDF Studio: view, reorder, rotate, annotate, merge, split",
+        "DOCX and PDF import/export",
+        "Works offline (PWA); no account or server required"
+      ]
+    }
+    </script>
   </head>
   <body>
     <div id="root"></div>
+
+    <!-- Crawlable fallback for search engines and no-JavaScript visitors.
+         The live app replaces #root above once JavaScript loads. -->
+    <noscript>
+      <main style="max-width: 720px; margin: 0 auto; padding: 40px 20px; font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif; line-height: 1.6; color: #1a2230;">
+        <h1>Career Studio — Free Resume, CV, Cover Letter &amp; Website Builder</h1>
+        <p>
+          Career Studio is a free, privacy-first tool to create professional
+          <strong>resumes</strong>, <strong>CVs</strong>,
+          <strong>cover letters</strong>, <strong>portfolios</strong> and
+          <strong>personal websites</strong> entirely in your browser. Nothing is
+          uploaded — your documents stay on your device. No account needed.
+        </p>
+        <h2>What you can build</h2>
+        <ul>
+          <li>Resumes &amp; CVs with six distinct templates and live preview</li>
+          <li>Cover letters, prefilled from one reusable career profile</li>
+          <li>Portfolios and a no-code personal website with static export</li>
+          <li>Edit, merge, split and annotate PDFs; import DOCX/PDF; export PDF, DOCX &amp; TXT</li>
+        </ul>
+        <p>This application requires JavaScript. Please enable JavaScript to use Career Studio.</p>
+      </main>
+    </noscript>
+
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>

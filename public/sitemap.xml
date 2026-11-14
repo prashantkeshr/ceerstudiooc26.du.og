@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Career Studio is a single-page application that uses hash routing, so the
+  canonical indexable URL is the site root. The in-app studios are private
+  per-visitor editor states (they require the visitor's own local data) and are
+  intentionally not listed for indexing.
+-->
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <url>
+    <loc>https://careerstudio.dhurta.org/</loc>
+    <lastmod>2026-11-14</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>1.0</priority>
+  </url>
+</urlset>
