@@ -287,6 +287,12 @@ button { font-family: inherit; }
 .swatch { width: 26px; height: 26px; border-radius: 50%; border: 2px solid var(--surface); box-shadow: 0 0 0 1px var(--border-strong); cursor: pointer; }
 .swatch.active { box-shadow: 0 0 0 2px var(--accent); }
 
+/* Drag-and-drop section manager */
+.dnd-col { display: flex; flex-direction: column; gap: 6px; padding: 8px; border-radius: var(--radius-sm); background: var(--surface-2); }
+.dnd-row { display: flex; align-items: center; gap: 6px; padding: 7px 8px; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-sm); cursor: grab; user-select: none; }
+.dnd-row:active { cursor: grabbing; }
+.dnd-row:hover { border-color: var(--border-strong); }
+
 .tpl-pick { display: grid; grid-template-columns: 1fr 1fr; gap: 9px; }
 .tpl-opt { border: 2px solid var(--border); border-radius: var(--radius-sm); padding: 9px; cursor: pointer; background: var(--surface); text-align: left; }
 .tpl-opt.active { border-color: var(--accent); }

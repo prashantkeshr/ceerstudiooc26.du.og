@@ -13,6 +13,7 @@
 
 .r-header { margin-bottom: 14px; }
 .r-name { font-size: 2em; font-weight: 800; letter-spacing: -0.01em; }
+.r-name, .r-sec-title { font-family: var(--doc-heading-font, var(--doc-font)); }
 .r-title { font-size: 1.05em; color: #444; margin-top: 2px; }
 .r-contact { display: flex; flex-wrap: wrap; gap: 4px 14px; margin-top: 8px; font-size: 0.82em; color: #333; }
 .r-contact a { color: inherit; text-decoration: none; }
@@ -43,9 +44,12 @@
 .r-proj-link { font-size: 0.78em; color: var(--r-accent); }
 .r-tech { font-size: 0.78em; color: #555; margin-top: 2px; }
 
-/* Two-column sidebar layout (used by templates that opt in) */
+/* Two-column layout — any template can opt in via the design panel. */
 .r-layout { display: grid; grid-template-columns: 1fr; gap: 0; }
-.tpl-sidebar .r-layout { grid-template-columns: 34% 1fr; gap: 26px; }
+.two-col .r-layout { grid-template-columns: 34% 1fr; gap: 26px; }
+.two-col[data-side='right'] .r-layout { grid-template-columns: 1fr 34%; }
+.two-col[data-side='right'] .r-side { order: 2; }
+.two-col[data-side='right'] .r-main { order: 1; }
 .r-side { }
 .r-main { min-width: 0; }
 
@@ -89,9 +93,39 @@
 .tpl-academic .r-bullets { padding-left: 16px; }
 
 /* ---------- Technical (sidebar) ---------- */
-.tpl-technical.tpl-sidebar .r-side { background: #f4f6fa; border-radius: 8px; padding: 16px; }
+.tpl-technical.two-col .r-side { background: #f4f6fa; border-radius: 8px; padding: 16px; }
 .tpl-technical .r-side .r-name { font-size: 1.5em; }
 .tpl-technical .r-side .r-sec-title { color: var(--r-accent); }
-.tpl-technical .r-skillgroup { font-family: var(--font-ui); }
 .tpl-technical .r-chip-list { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 3px; }
 .tpl-technical .r-chip-list span { background: var(--r-accent); color: #fff; border-radius: 4px; padding: 1px 7px; font-size: 0.74em; }
+
+/* ---------- Elegant ---------- */
+.tpl-elegant { padding: 52px 56px; }
+.tpl-elegant .r-header { text-align: center; }
+.tpl-elegant .r-contact { justify-content: center; }
+.tpl-elegant .r-name { font-weight: 500; font-size: 2.4em; letter-spacing: 0.01em; }
+.tpl-elegant .r-title { color: var(--r-accent); font-style: italic; letter-spacing: 0.04em; }
+.tpl-elegant .r-sec-title { text-align: center; text-transform: uppercase; letter-spacing: 0.24em; font-size: 0.78em; color: #333; position: relative; border: none !important; }
+.tpl-elegant .r-sec-title::after { content: ''; display: block; width: 44px; height: 2px; background: var(--r-accent); margin: 6px auto 0; }
+
+/* ---------- Creative (coloured sidebar) ---------- */
+.tpl-creative.two-col .r-side { background: var(--r-accent); border-radius: 10px; padding: 22px 18px; }
+.tpl-creative.two-col .r-side, .tpl-creative.two-col .r-side * { color: #fff !important; }
+.tpl-creative.two-col .r-side .r-sec-title { color: rgba(255,255,255,0.85) !important; border: none !important; padding-left: 0 !important; }
+.tpl-creative.two-col .r-side .r-contact a { text-decoration: underline; }
+.tpl-creative .r-name { font-weight: 800; }
+.tpl-creative .r-chip-list { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 3px; }
+.tpl-creative.two-col .r-side .r-chip-list span { background: rgba(255,255,255,0.18); border-radius: 4px; padding: 1px 7px; font-size: 0.74em; }
+
+/* ---------- Compact ---------- */
+.tpl-compact { padding: 36px 44px; }
+.tpl-compact .r-name { font-size: 1.7em; }
+.tpl-compact .r-section { margin-bottom: 12px; }
+.tpl-compact .r-item { margin-bottom: 7px; }
+.tpl-compact .r-sec-title { font-size: 0.82em; margin-bottom: 5px; }
+.tpl-compact .r-bullets { margin-top: 3px; }
+
+/* ---------- Corporate (two-column default) ---------- */
+.tpl-corporate .r-header { border-bottom: 3px solid var(--r-accent); padding-bottom: 10px; margin-bottom: 18px; }
+.tpl-corporate.two-col .r-side .r-sec-title { color: var(--r-accent); }
+.tpl-corporate .r-name { font-weight: 800; }

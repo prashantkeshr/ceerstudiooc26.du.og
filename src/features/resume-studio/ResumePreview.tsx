@@ -1,16 +1,9 @@
-import type { CSSProperties } from 'react';
-import type { FontKey, ResumeContent, ResumeData } from '../../core/models/types';
+import { useEffect, type CSSProperties } from 'react';
+import type { ResumeContent, ResumeData } from '../../core/models/types';
 import { getTemplate } from './templates/registry';
 import { SECTION_TITLES } from './sections';
 import { Editable } from './Editable';
-
-const FONT_STACK: Record<FontKey, string> = {
-  inter: "'Inter', system-ui, sans-serif",
-  georgia: "Georgia, 'Times New Roman', serif",
-  times: "'Times New Roman', Times, serif",
-  arial: 'Arial, Helvetica, sans-serif',
-  jetbrains: "'JetBrains Mono', ui-monospace, 'Courier New', monospace",
-};
+import { FONT_STACK, ensureFont } from './fonts';
 
 const PAGE_DIMS = {
   a4: { w: 794, h: 1123 },
@@ -192,11 +185,16 @@ export function ResumePreview({ data, editing = false, commit }: {
   const isTech = tpl.id === 'technical';
   const ec: EditCtx = { on: editing && !!commit, commit: commit ?? (() => {}) };
 
+  const headingFont = data.design.headingFont ?? data.design.fontFamily;
+  // Load any on-demand (Google) fonts the document uses.
+  useEffect(() => { ensureFont(data.design.fontFamily); ensureFont(headingFont); }, [data.design.fontFamily, headingFont]);
+
   const visible = data.sectionOrder.filter((k) => !data.hiddenSections.includes(k));
 
   const style = {
     '--r-accent': data.design.accent,
     '--doc-font': FONT_STACK[data.design.fontFamily],
+    '--doc-heading-font': FONT_STACK[headingFont],
     '--doc-scale': data.design.fontScale,
     '--doc-lh': data.design.lineHeight,
     '--doc-sec-gap': `${data.design.sectionSpacing}px`,
@@ -211,13 +209,17 @@ export function ResumePreview({ data, editing = false, commit }: {
     </>
   );
 
-  const cls = `paper tpl-${tpl.id}${tpl.layout === 'sidebar' ? ' tpl-sidebar' : ''}${ec.on ? ' editing' : ''}`;
+  // Two columns when the design asks for it (defaults seeded from the template).
+  const twoCol = (data.design.columns ?? (tpl.layout === 'sidebar' ? 'two' : 'single')) === 'two';
+  const sidebarSet = new Set(data.design.sidebarSections ?? (tpl.layout === 'sidebar' ? ['skills'] : []));
+  const side = data.design.sidebarSide ?? 'left';
+  const cls = `paper tpl-${tpl.id}${twoCol ? ' two-col' : ''}${ec.on ? ' editing' : ''}`;
 
-  if (tpl.layout === 'sidebar') {
-    const sideKeys = visible.filter((k) => k === 'skills');
-    const mainKeys = visible.filter((k) => k !== 'skills');
+  if (twoCol) {
+    const sideKeys = visible.filter((k) => sidebarSet.has(k));
+    const mainKeys = visible.filter((k) => !sidebarSet.has(k));
     return (
-      <div className={cls} data-heading={data.design.headingStyle} style={style}>
+      <div className={cls} data-heading={data.design.headingStyle} data-side={side} style={style}>
         <div className="r-layout">
           <aside className="r-side">
             {name}

@@ -57,11 +57,15 @@ export function defaultDesign(): ResumeDesign {
   return {
     accent: '#2563eb',
     fontFamily: 'inter',
+    headingFont: 'inter',
     fontScale: 1,
     lineHeight: 1.45,
     sectionSpacing: 20,
     headingStyle: 'bar',
     pageSize: 'a4',
+    columns: 'single',
+    sidebarSections: ['skills'],
+    sidebarSide: 'left',
   };
 }
 

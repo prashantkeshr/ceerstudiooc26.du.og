@@ -8,20 +8,15 @@ import { buildBackup, download, safeFilename } from '../../services/exports/back
 import { coverLetterToText, coverLetterToDocxBlob } from '../../services/exports/coverLetter';
 import { downloadBlob } from '../../services/exports/docx';
 import { Icon } from '../../components/ui/Icon';
+import { FONT_STACK, FONTS, ensureFont } from '../resume-studio/fonts';
 
-const FONT_STACK: Record<FontKey, string> = {
-  inter: "'Inter', system-ui, sans-serif", georgia: "Georgia, 'Times New Roman', serif",
-  times: "'Times New Roman', Times, serif", arial: 'Arial, Helvetica, sans-serif', jetbrains: "ui-monospace, monospace",
-};
 const PAGE = { a4: { w: 794, h: 1123 }, letter: { w: 816, h: 1056 } };
-const FONTS: { key: FontKey; label: string }[] = [
-  { key: 'georgia', label: 'Georgia' }, { key: 'times', label: 'Times' }, { key: 'inter', label: 'Inter' }, { key: 'arial', label: 'Arial' },
-];
 const ACCENTS = ['#2563eb', '#0d9488', '#7c3aed', '#1f2937', '#dc2626'];
 type Pane = 'content' | 'preview';
 
 function LetterPreview({ d }: { d: CoverLetterData }) {
   const dims = PAGE[d.design.pageSize];
+  useEffect(() => { ensureFont(d.design.fontFamily); }, [d.design.fontFamily]);
   const style = {
     '--r-accent': d.design.accent, '--doc-font': FONT_STACK[d.design.fontFamily],
     '--doc-scale': d.design.fontScale, '--doc-lh': d.design.lineHeight,

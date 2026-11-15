@@ -42,8 +42,16 @@ export function Dashboard() {
       templateId,
       content: hasProfile ? contentFromProfile(profile) : undefined,
     });
-    const def = TEMPLATES.find((t) => t.id === templateId)!.defaults;
-    proj.data.design = { ...proj.data.design, accent: def.accent, fontFamily: def.font, headingStyle: def.heading };
+    const tpl = TEMPLATES.find((t) => t.id === templateId)!;
+    const def = tpl.defaults;
+    const isTwo = tpl.layout === 'sidebar';
+    proj.data.design = {
+      ...proj.data.design,
+      accent: def.accent, fontFamily: def.font, headingFont: def.headingFont ?? def.font, headingStyle: def.heading,
+      columns: isTwo ? 'two' : 'single',
+      sidebarSections: isTwo ? ['skills'] : [],
+      sidebarSide: templateId === 'corporate' ? 'right' : 'left',
+    };
     await saveProjectRecord(proj);
     setPickOpen(false);
     navigate(`/resume/${proj.id}`);

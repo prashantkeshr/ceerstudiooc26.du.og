@@ -122,15 +122,25 @@ export type HeadingStyle = 'underline' | 'bar' | 'plain' | 'uppercase';
 
 export interface ResumeDesign {
   accent: string;
-  fontFamily: FontKey;
+  fontFamily: FontKey; // body font
+  headingFont?: FontKey; // heading/name font (falls back to fontFamily)
   fontScale: number; // 0.85 – 1.15
   lineHeight: number; // 1.2 – 1.7
   sectionSpacing: number; // px between sections
   headingStyle: HeadingStyle;
   pageSize: 'a4' | 'letter';
+  /** Layout override: 'single' column or 'two' columns (sidebar + main). */
+  columns?: 'single' | 'two';
+  /** Which section keys live in the sidebar when two-column. */
+  sidebarSections?: string[];
+  /** Side the sidebar sits on when two-column. */
+  sidebarSide?: 'left' | 'right';
 }
 
-export type FontKey = 'inter' | 'georgia' | 'times' | 'arial' | 'jetbrains';
+export type FontKey =
+  | 'inter' | 'arial' | 'verdana' | 'poppins' | 'montserrat' | 'sourceSans'
+  | 'georgia' | 'times' | 'garamond' | 'lora' | 'merriweather' | 'robotoSlab'
+  | 'playfair' | 'jetbrains';
 
 // Built-in, reorderable sections. Custom sections are referenced by their id.
 export type BuiltInSectionKey =

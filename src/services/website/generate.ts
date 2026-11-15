@@ -1,4 +1,5 @@
-import type { FontKey, PortfolioProject, ResumeContent, WebsiteData } from '../../core/models/types';
+import type { PortfolioProject, ResumeContent, WebsiteData } from '../../core/models/types';
+import { FONT_STACK } from '../../features/resume-studio/fonts';
 
 // ---------------------------------------------------------------------------
 // Static website generator. Produces real, crawlable, semantic HTML plus a
@@ -6,14 +7,6 @@ import type { FontKey, PortfolioProject, ResumeContent, WebsiteData } from '../.
 // The in-app preview renders the SAME markup inline (data-URL images, inlined
 // CSS/JS), so what you preview is what you export. Nothing here needs a server.
 // ---------------------------------------------------------------------------
-
-const FONT_STACK: Record<FontKey, string> = {
-  inter: "'Inter', system-ui, -apple-system, sans-serif",
-  georgia: "Georgia, 'Times New Roman', serif",
-  times: "'Times New Roman', Times, serif",
-  arial: 'Arial, Helvetica, sans-serif',
-  jetbrains: "ui-monospace, 'JetBrains Mono', 'Courier New', monospace",
-};
 
 export function esc(s: string): string {
   return (s ?? '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');

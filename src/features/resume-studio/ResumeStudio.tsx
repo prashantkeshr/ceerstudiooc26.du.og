@@ -26,7 +26,15 @@ function normalize(data: ResumeData): ResumeData {
   for (const id of customIds) if (!order.includes(id)) order.push(id);
   for (const b of BUILTIN_SECTIONS) if (!order.includes(b)) order.push(b);
   const hidden = data.hiddenSections.filter((k) => valid.has(k));
-  return { ...data, sectionOrder: order, hiddenSections: hidden, snapshots: data.snapshots ?? [] };
+  // Backfill design fields added in the Canva-style upgrade.
+  const design = {
+    ...data.design,
+    headingFont: data.design.headingFont ?? data.design.fontFamily,
+    columns: data.design.columns ?? 'single',
+    sidebarSections: (data.design.sidebarSections ?? []).filter((k) => valid.has(k)),
+    sidebarSide: data.design.sidebarSide ?? 'left',
+  };
+  return { ...data, design, sectionOrder: order, hiddenSections: hidden, snapshots: data.snapshots ?? [] };
 }
 
 function normalizeProject(p: ResumeProject): ResumeProject {
