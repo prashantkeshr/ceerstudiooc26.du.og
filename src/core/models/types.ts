@@ -78,6 +78,8 @@ export interface CustomSection {
 export interface ResumeContent {
   fullName: string;
   title: string;
+  /** Optional profile photo as a data URL (shown when the design enables it). */
+  photo?: string;
   email: string;
   phone: string;
   location: string;
@@ -141,6 +143,10 @@ export interface ResumeDesign {
   textColor?: string; // body text colour
   nameScale?: number; // 0.8 – 1.4
   headingScale?: number; // 0.8 – 1.3
+  // --- Photo & dividers ---
+  showPhoto?: boolean;
+  photoShape?: 'circle' | 'rounded' | 'square';
+  divider?: 'none' | 'line';
 }
 
 export type FontKey =

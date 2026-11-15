@@ -66,6 +66,9 @@ export function defaultDesign(): ResumeDesign {
     columns: 'single',
     sidebarSections: ['skills'],
     sidebarSide: 'left',
+    showPhoto: false,
+    photoShape: 'circle',
+    divider: 'none',
   };
 }
 
@@ -81,37 +84,13 @@ export const DEFAULT_SECTION_ORDER: string[] = [
 /** Build resume content from a profile (a snapshot the resume then owns). */
 export function contentFromProfile(profile: CareerProfile): ResumeContent {
   const {
-    fullName,
-    title,
-    email,
-    phone,
-    location,
-    website,
-    links,
-    summary,
-    experience,
-    education,
-    skills,
-    projects,
-    certifications,
-    customSections,
+    fullName, title, photo, email, phone, location, website, links, summary,
+    experience, education, skills, projects, certifications, customSections,
   } = profile;
   // Deep clone so the resume cannot mutate the profile (or vice versa).
   return structuredClone({
-    fullName,
-    title,
-    email,
-    phone,
-    location,
-    website,
-    links,
-    summary,
-    experience,
-    education,
-    skills,
-    projects,
-    certifications,
-    customSections,
+    fullName, title, photo, email, phone, location, website, links, summary,
+    experience, education, skills, projects, certifications, customSections,
   });
 }
 

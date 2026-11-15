@@ -9,7 +9,33 @@ import type {
   SkillGroup,
 } from '../../core/models/types';
 import { uid } from '../../core/models/factory';
+import { fileToResizedDataUrl } from '../../services/images/resize';
 import { Icon } from '../../components/ui/Icon';
+
+function PhotoField({ value, onChange }: { value?: string; onChange: (v: string) => void }) {
+  const ref = useRef<HTMLInputElement>(null);
+  const [err, setErr] = useState<string | null>(null);
+  const pick = async (f: File) => {
+    setErr(null);
+    if (!f.type.startsWith('image/')) { setErr('Choose an image file.'); return; }
+    try { onChange(await fileToResizedDataUrl(f, 512)); } catch { setErr('Could not process that image.'); }
+  };
+  return (
+    <div className="field">
+      <label>Profile photo (optional)</label>
+      <div className="row" style={{ gap: 10 }}>
+        <div style={{ width: 56, height: 56, borderRadius: 8, border: '1px solid var(--border)', overflow: 'hidden', background: 'var(--surface-2)', display: 'grid', placeItems: 'center', flexShrink: 0 }}>
+          {value ? <img src={value} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} /> : <Icon name="user" size={20} className="faint" />}
+        </div>
+        <button className="btn btn-sm" onClick={() => ref.current?.click()}><Icon name="upload" size={13} /> Upload</button>
+        {value && <button className="btn btn-sm btn-ghost" onClick={() => onChange('')}>Remove</button>}
+        <input ref={ref} type="file" accept="image/*" className="hidden" onChange={(e) => { const f = e.target.files?.[0]; if (f) pick(f); e.target.value = ''; }} />
+      </div>
+      {err && <div className="sev-error" style={{ fontSize: 12, marginTop: 4 }}>{err}</div>}
+      <p className="faint" style={{ fontSize: 11, marginTop: 4 }}>Turn it on in Design → Photo. Resume-photo norms vary by country & industry.</p>
+    </div>
+  );
+}
 
 type Patch = (fn: (c: ResumeContent) => ResumeContent) => void;
 
@@ -152,6 +178,7 @@ export function ResumeEditor({ content, patch }: { content: ResumeContent; patch
       <SectionBox title="Details">
         <Text label="Full name" value={c.fullName} onChange={(v) => patch((p) => ({ ...p, fullName: v }))} placeholder="Jane Doe" />
         <Text label="Professional title" value={c.title} onChange={(v) => patch((p) => ({ ...p, title: v }))} placeholder="Product Designer" />
+        <PhotoField value={c.photo} onChange={(v) => patch((p) => ({ ...p, photo: v }))} />
         <div className="entry-grid">
           <Text label="Email" value={c.email} onChange={(v) => patch((p) => ({ ...p, email: v }))} />
           <Text label="Phone" value={c.phone} onChange={(v) => patch((p) => ({ ...p, phone: v }))} />

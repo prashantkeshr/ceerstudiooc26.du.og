@@ -219,6 +219,11 @@ export function ResumePreview({ data, editing = false, commit }: {
     </>
   );
 
+  const photo = data.design.showPhoto && c.photo
+    ? <img className={`r-photo r-photo-${data.design.photoShape ?? 'circle'}`} src={c.photo} alt="" />
+    : null;
+  const divider = data.design.divider ?? 'none';
+
   // Two columns when the design asks for it (defaults seeded from the template).
   const twoCol = (data.design.columns ?? (tpl.layout === 'sidebar' ? 'two' : 'single')) === 'two';
   const sidebarSet = new Set(data.design.sidebarSections ?? (tpl.layout === 'sidebar' ? ['skills'] : []));
@@ -229,9 +234,10 @@ export function ResumePreview({ data, editing = false, commit }: {
     const sideKeys = visible.filter((k) => sidebarSet.has(k));
     const mainKeys = visible.filter((k) => !sidebarSet.has(k));
     return (
-      <div className={cls} data-heading={data.design.headingStyle} data-side={side} style={style}>
+      <div className={cls} data-heading={data.design.headingStyle} data-side={side} data-divider={divider} style={style}>
         <div className="r-layout">
           <aside className="r-side">
+            {photo}
             {name}
             <ContactLine c={c} />
             {sideKeys.map((k) => <Section key={k} k={k} content={c} isTech={isTech} ec={ec} />)}
@@ -245,8 +251,8 @@ export function ResumePreview({ data, editing = false, commit }: {
   }
 
   return (
-    <div className={cls} data-heading={data.design.headingStyle} style={style}>
-      <header className="r-header">{name}<ContactLine c={c} /></header>
+    <div className={cls} data-heading={data.design.headingStyle} data-divider={divider} style={style}>
+      <header className="r-header">{photo}{name}<ContactLine c={c} /></header>
       {visible.map((k) => <Section key={k} k={k} content={c} isTech={isTech} ec={ec} />)}
     </div>
   );

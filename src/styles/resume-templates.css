@@ -21,6 +21,19 @@
 .r-contact .sep { color: #bbb; }
 
 .r-section { margin-bottom: var(--doc-sec-gap, 18px); }
+
+/* Profile photo */
+.r-photo { width: 92px; height: 92px; object-fit: cover; display: block; margin-bottom: 10px; border: 2px solid rgba(0,0,0,0.06); }
+.r-photo-circle { border-radius: 50%; }
+.r-photo-rounded { border-radius: 14px; }
+.r-photo-square { border-radius: 0; }
+.tpl-classic .r-header .r-photo, .tpl-academic .r-header .r-photo, .tpl-elegant .r-header .r-photo { margin-left: auto; margin-right: auto; }
+.two-col .r-side .r-photo { margin-bottom: 12px; }
+.tpl-creative.two-col .r-side .r-photo, .tpl-slate .r-header .r-photo { border-color: rgba(255,255,255,0.5); }
+
+/* Section dividers */
+.paper[data-divider='line'] .r-main .r-section + .r-section,
+.paper[data-divider='line'] > .r-section + .r-section { border-top: 1px solid #e5e7eb; padding-top: 14px; }
 .r-sec-title { font-size: calc(0.95em * var(--r-heading-scale, 1)); font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 8px; color: var(--r-heading-color, var(--r-accent)); }
 
 /* Heading style variants (data-heading on .paper) */

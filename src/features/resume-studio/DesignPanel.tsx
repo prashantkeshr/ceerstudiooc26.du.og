@@ -10,6 +10,16 @@ import { useStore } from '../../state/store';
 type PatchData = (fn: (d: ResumeData) => ResumeData) => void;
 
 const ACCENTS = ['#2563eb', '#1d4ed8', '#0d9488', '#7c3aed', '#db2777', '#dc2626', '#ea580c', '#9a3412', '#1f2937', '#334155'];
+const PALETTES: { name: string; accent: string; nameColor: string; headingColor: string }[] = [
+  { name: 'Ocean', accent: '#2563eb', nameColor: '#0f172a', headingColor: '#2563eb' },
+  { name: 'Teal', accent: '#0d9488', nameColor: '#0f172a', headingColor: '#0d9488' },
+  { name: 'Plum', accent: '#7c3aed', nameColor: '#1f2937', headingColor: '#6d28d9' },
+  { name: 'Rose', accent: '#db2777', nameColor: '#1f2937', headingColor: '#be185d' },
+  { name: 'Ember', accent: '#ea580c', nameColor: '#1f2937', headingColor: '#c2410c' },
+  { name: 'Forest', accent: '#15803d', nameColor: '#14271a', headingColor: '#15803d' },
+  { name: 'Graphite', accent: '#334155', nameColor: '#0f172a', headingColor: '#334155' },
+  { name: 'Crimson', accent: '#b91c1c', nameColor: '#1f2937', headingColor: '#991b1b' },
+];
 const HEADINGS: { key: HeadingStyle; label: string }[] = [
   { key: 'bar', label: 'Bar' },
   { key: 'underline', label: 'Underline' },
@@ -177,6 +187,14 @@ export function DesignPanel({ data, patchData }: { data: ResumeData; patchData: 
         <input type="color" aria-label="Custom accent colour" value={d.accent} onChange={(e) => setDesign({ accent: e.target.value })} style={{ width: 28, height: 28, padding: 0, border: 'none', background: 'none', cursor: 'pointer' }} />
       </div>
 
+      <h4 style={{ margin: '18px 0 8px' }}>Colour palettes</h4>
+      <div className="swatches">
+        {PALETTES.map((p) => (
+          <button key={p.name} className="swatch" title={p.name} aria-label={`${p.name} palette`} style={{ background: p.accent }}
+            onClick={() => setDesign({ accent: p.accent, nameColor: p.nameColor, headingColor: p.headingColor })} />
+        ))}
+      </div>
+
       <h4 style={{ margin: '18px 0 8px' }}>Fonts</h4>
       <FontSelect label="Heading font" value={d.headingFont ?? d.fontFamily} onChange={(v) => setDesign({ headingFont: v })} />
       <FontSelect label="Body font" value={d.fontFamily} onChange={(v) => setDesign({ fontFamily: v })} />
@@ -188,6 +206,27 @@ export function DesignPanel({ data, patchData }: { data: ResumeData; patchData: 
           {HEADINGS.map((h) => <button key={h.key} className={h.key === d.headingStyle ? 'active' : ''} onClick={() => setDesign({ headingStyle: h.key })}>{h.label}</button>)}
         </div>
       </div>
+      <div className="field">
+        <label>Section divider</label>
+        <div className="seg" role="group" aria-label="Section divider">
+          <button className={(d.divider ?? 'none') === 'none' ? 'active' : ''} onClick={() => setDesign({ divider: 'none' })}>None</button>
+          <button className={d.divider === 'line' ? 'active' : ''} onClick={() => setDesign({ divider: 'line' })}>Line</button>
+        </div>
+      </div>
+
+      <h4 style={{ margin: '18px 0 8px' }}>Photo</h4>
+      <label className="row" style={{ gap: 8, fontSize: 14 }}>
+        <input type="checkbox" checked={!!d.showPhoto} onChange={(e) => setDesign({ showPhoto: e.target.checked })} /> Show profile photo
+      </label>
+      {d.showPhoto && (
+        <div className="field" style={{ marginTop: 8 }}>
+          <label>Photo shape</label>
+          <div className="seg" role="group" aria-label="Photo shape">
+            {(['circle', 'rounded', 'square'] as const).map((s) => <button key={s} className={(d.photoShape ?? 'circle') === s ? 'active' : ''} onClick={() => setDesign({ photoShape: s })} style={{ textTransform: 'capitalize' }}>{s}</button>)}
+          </div>
+          <p className="faint" style={{ fontSize: 11, marginTop: 4 }}>Upload the photo in the Content panel → Details.</p>
+        </div>
+      )}
 
       <h4 style={{ margin: '18px 0 8px' }}>Layout</h4>
       <div className="seg" role="group" aria-label="Column layout">
