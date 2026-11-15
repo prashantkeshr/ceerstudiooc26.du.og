@@ -198,6 +198,10 @@ export function WebsiteStudio() {
             <label className="row" style={{ gap: 8, fontSize: 14, marginTop: 6 }}>
               <input type="checkbox" checked={d.theme.dark} onChange={(e) => setD({ theme: { ...d.theme, dark: e.target.checked } })} /> Dark theme
             </label>
+            <label className="row" style={{ gap: 8, fontSize: 14, marginTop: 6 }}>
+              <input type="checkbox" checked={!!d.theme.showPhoto} onChange={(e) => setD({ theme: { ...d.theme, showPhoto: e.target.checked } })} /> Show profile photo in hero
+            </label>
+            {d.theme.showPhoto && !d.snapshot.photo && <p className="faint" style={{ fontSize: 11, marginTop: 4 }}>Add a photo in the resume’s Career Profile, then “Sync content from Profile”.</p>}
           </div>
         </div>
       </div>

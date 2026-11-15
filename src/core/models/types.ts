@@ -147,6 +147,8 @@ export interface ResumeDesign {
   showPhoto?: boolean;
   photoShape?: 'circle' | 'rounded' | 'square';
   divider?: 'none' | 'line';
+  /** Coloured band behind the header (single-column). */
+  headerBand?: boolean;
 }
 
 export type FontKey =
@@ -209,7 +211,7 @@ export interface WebsiteSEO {
 
 export interface WebsiteData {
   templateId: string;
-  theme: { accent: string; font: FontKey; dark: boolean };
+  theme: { accent: string; font: FontKey; dark: boolean; showPhoto?: boolean };
   hero: { headline: string; tagline: string };
   about: string;
   sections: WebsiteSectionCfg[];

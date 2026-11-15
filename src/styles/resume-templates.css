@@ -31,6 +31,13 @@
 .two-col .r-side .r-photo { margin-bottom: 12px; }
 .tpl-creative.two-col .r-side .r-photo, .tpl-slate .r-header .r-photo { border-color: rgba(255,255,255,0.5); }
 
+/* Header accent band (single column) */
+.paper[data-band='on'] .r-header { background: var(--r-accent); border-radius: 10px; padding: 26px 26px 22px; margin-bottom: 20px; }
+.paper[data-band='on'] .r-header, .paper[data-band='on'] .r-header * { color: #fff !important; }
+.paper[data-band='on'] .r-header .r-title { color: rgba(255,255,255,0.86) !important; }
+.paper[data-band='on'] .r-header .r-contact a { text-decoration: underline; }
+.paper[data-band='on'] .r-header .r-photo { border-color: rgba(255,255,255,0.5); }
+
 /* Section dividers */
 .paper[data-divider='line'] .r-main .r-section + .r-section,
 .paper[data-divider='line'] > .r-section + .r-section { border-top: 1px solid #e5e7eb; padding-top: 14px; }

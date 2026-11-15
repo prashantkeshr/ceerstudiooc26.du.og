@@ -251,7 +251,7 @@ export function ResumePreview({ data, editing = false, commit }: {
   }
 
   return (
-    <div className={cls} data-heading={data.design.headingStyle} data-divider={divider} style={style}>
+    <div className={cls} data-heading={data.design.headingStyle} data-divider={divider} data-band={data.design.headerBand ? 'on' : undefined} style={style}>
       <header className="r-header">{photo}{name}<ContactLine c={c} /></header>
       {visible.map((k) => <Section key={k} k={k} content={c} isTech={isTech} ec={ec} />)}
     </div>

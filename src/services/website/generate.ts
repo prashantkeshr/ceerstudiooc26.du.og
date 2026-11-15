@@ -50,6 +50,8 @@ img{max-width:100%;display:block}
 .site-nav a{color:var(--soft);text-decoration:none;font-weight:600;font-size:14px;padding:6px 10px;border-radius:7px}
 .site-nav a:hover{color:var(--text);background:var(--surface)}
 .hero{padding:72px 0 40px}
+.hero-avatar{width:112px;height:112px;border-radius:50%;object-fit:cover;margin:0 0 18px;border:3px solid var(--surface);box-shadow:0 4px 16px rgba(0,0,0,.12)}
+.site-sidebar .hero-avatar{width:96px}
 .hero h1{font-size:clamp(28px,5vw,46px);line-height:1.1;letter-spacing:-.02em;margin:0 0 12px}
 .hero .tagline{font-size:clamp(16px,2.4vw,20px);color:var(--soft);margin:0 0 18px;max-width:40ch}
 .hero .contact{display:flex;flex-wrap:wrap;gap:10px 16px;font-size:14px}
@@ -131,7 +133,8 @@ export function buildBody(data: WebsiteData, imgSrc: (p: PortfolioProject) => st
   const visible = data.sections.filter((s) => s.visible);
   const navLinks = visible.map((s) => `<a href="#${s.key}">${s.key[0].toUpperCase() + s.key.slice(1)}</a>`).join('');
   const contactTop = [c.email && `<a href="mailto:${esc(c.email)}">${esc(c.email)}</a>`, ...c.links.filter((l) => l.url).map((l) => `<a href="${esc(href(l.url))}">${esc(l.label || l.url)}</a>`)].filter(Boolean).join('');
-  const hero = `<header class="hero"><div class="wrap"><h1>${esc(data.hero.headline)}</h1><p class="tagline">${esc(data.hero.tagline)}</p><div class="contact">${contactTop}</div></div></header>`;
+  const avatar = data.theme.showPhoto && c.photo ? `<img class="hero-avatar" src="${c.photo}" alt="${esc(c.fullName)}">` : '';
+  const hero = `<header class="hero"><div class="wrap">${avatar}<h1>${esc(data.hero.headline)}</h1><p class="tagline">${esc(data.hero.tagline)}</p><div class="contact">${contactTop}</div></div></header>`;
   const sectionsHtml = visible.map((s) => sectionHtml(s.key, c, data, imgSrc)).join('\n');
   const year = new Date().getFullYear();
   const footer = `<footer><div class="wrap">© ${year} ${esc(c.fullName || '')} · Built with Career Studio</div></footer>`;

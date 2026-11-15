@@ -213,6 +213,11 @@ export function DesignPanel({ data, patchData }: { data: ResumeData; patchData: 
           <button className={d.divider === 'line' ? 'active' : ''} onClick={() => setDesign({ divider: 'line' })}>Line</button>
         </div>
       </div>
+      {!twoCol && (
+        <label className="row" style={{ gap: 8, fontSize: 14, marginTop: 4 }}>
+          <input type="checkbox" checked={!!d.headerBand} onChange={(e) => setDesign({ headerBand: e.target.checked })} /> Coloured header band
+        </label>
+      )}
 
       <h4 style={{ margin: '18px 0 8px' }}>Photo</h4>
       <label className="row" style={{ gap: 8, fontSize: 14 }}>

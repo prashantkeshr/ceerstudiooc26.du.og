@@ -11,7 +11,7 @@ import { Icon } from '../../components/ui/Icon';
 import { FONT_STACK, FONTS, ensureFont } from '../resume-studio/fonts';
 
 const PAGE = { a4: { w: 794, h: 1123 }, letter: { w: 816, h: 1056 } };
-const ACCENTS = ['#2563eb', '#0d9488', '#7c3aed', '#1f2937', '#dc2626'];
+const ACCENTS = ['#2563eb', '#0d9488', '#7c3aed', '#db2777', '#ea580c', '#15803d', '#1f2937', '#b91c1c'];
 type Pane = 'content' | 'preview';
 
 function LetterPreview({ d }: { d: CoverLetterData }) {
