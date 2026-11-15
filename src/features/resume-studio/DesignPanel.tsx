@@ -39,6 +39,18 @@ function FontSelect({ label, value, onChange }: { label: string; value: FontKey;
   );
 }
 
+function ColourRow({ label, value, fallback, onChange }: { label: string; value?: string; fallback: string; onChange: (v: string | undefined) => void }) {
+  return (
+    <div className="row" style={{ justifyContent: 'space-between', margin: '6px 0' }}>
+      <span style={{ fontSize: 13, color: 'var(--text-soft)', fontWeight: 600 }}>{label}</span>
+      <div className="row" style={{ gap: 6 }}>
+        <input type="color" aria-label={label} value={value ?? fallback} onChange={(e) => onChange(e.target.value)} style={{ width: 26, height: 26, padding: 0, border: 'none', background: 'none', cursor: 'pointer' }} />
+        <button className="btn btn-sm btn-ghost" onClick={() => onChange(undefined)} disabled={!value}>Auto</button>
+      </div>
+    </div>
+  );
+}
+
 function Range({ label, value, min, max, step, format, onChange }: {
   label: string; value: number; min: number; max: number; step: number; format: (v: number) => string; onChange: (v: number) => void;
 }) {
@@ -205,6 +217,13 @@ export function DesignPanel({ data, patchData }: { data: ResumeData; patchData: 
               <button className={d.pageSize === 'letter' ? 'active' : ''} onClick={() => setDesign({ pageSize: 'letter' })}>Letter</button>
             </div>
           </div>
+
+          <h4 style={{ margin: '18px 0 8px' }}>Colours &amp; sizing</h4>
+          <ColourRow label="Name colour" value={d.nameColor} fallback="#1a1a1a" onChange={(v) => setDesign({ nameColor: v })} />
+          <ColourRow label="Heading colour" value={d.headingColor} fallback={d.accent} onChange={(v) => setDesign({ headingColor: v })} />
+          <ColourRow label="Body text colour" value={d.textColor} fallback="#1a1a1a" onChange={(v) => setDesign({ textColor: v })} />
+          <Range label="Name size" value={d.nameScale ?? 1} min={0.8} max={1.4} step={0.02} format={(v) => `${Math.round(v * 100)}%`} onChange={(v) => setDesign({ nameScale: v })} />
+          <Range label="Heading size" value={d.headingScale ?? 1} min={0.8} max={1.3} step={0.02} format={(v) => `${Math.round(v * 100)}%`} onChange={(v) => setDesign({ headingScale: v })} />
         </>
       )}
 

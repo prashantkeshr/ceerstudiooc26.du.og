@@ -135,6 +135,12 @@ export interface ResumeDesign {
   sidebarSections?: string[];
   /** Side the sidebar sits on when two-column. */
   sidebarSide?: 'left' | 'right';
+  // --- Per-element overrides (optional; fall back to sensible defaults) ---
+  nameColor?: string;
+  headingColor?: string; // section-title colour (defaults to accent)
+  textColor?: string; // body text colour
+  nameScale?: number; // 0.8 – 1.4
+  headingScale?: number; // 0.8 – 1.3
 }
 
 export type FontKey =

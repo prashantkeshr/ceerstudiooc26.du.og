@@ -110,6 +110,24 @@ export const TEMPLATES: TemplateDef[] = [
     defaults: { font: 'georgia', headingFont: 'montserrat', heading: 'bar', accent: '#1d4ed8' },
     thumb: 'linear-gradient(90deg, #fff 0 66%, #dbeafe 66%)',
   },
+  {
+    id: 'slate',
+    name: 'Slate',
+    category: 'Modern',
+    description: 'Dark header band behind your name; confident and contemporary.',
+    layout: 'single',
+    defaults: { font: 'inter', headingFont: 'montserrat', heading: 'plain', accent: '#0f172a' },
+    thumb: 'linear-gradient(#0f172a 0 26%, #fff 26%)',
+  },
+  {
+    id: 'editorial',
+    name: 'Editorial',
+    category: 'Creative',
+    description: 'Magazine-style serif with a large name and fine rules.',
+    layout: 'single',
+    defaults: { font: 'lora', headingFont: 'playfair', heading: 'underline', accent: '#b91c1c' },
+    thumb: 'linear-gradient(#fff 0 40%, #111 40% 41%, #fff 41%)',
+  },
 ];
 
 const byId = new Map(TEMPLATES.map((t) => [t.id, t]));

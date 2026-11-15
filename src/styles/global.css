@@ -274,7 +274,9 @@ button { font-family: inherit; }
 .sec-body { padding: 0 11px 11px; }
 .entry { border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 10px; margin-bottom: 9px; background: var(--surface); }
 .entry-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
-.drag-handle { cursor: grab; color: var(--text-faint); user-select: none; font-size: 16px; line-height: 1; }
+.drag-handle { cursor: grab; color: var(--text-faint); user-select: none; font-size: 16px; line-height: 1; display: inline-flex; align-items: center; padding: 2px; border-radius: 4px; }
+.drag-handle:hover { color: var(--text-soft); background: var(--surface-2); }
+.drag-handle:active { cursor: grabbing; }
 .chip-row { display: flex; flex-wrap: wrap; gap: 6px; }
 .chip { display: inline-flex; align-items: center; gap: 6px; background: var(--accent-soft); color: var(--accent); border-radius: 999px; padding: 3px 9px; font-size: 13px; font-weight: 600; }
 .chip button { border: none; background: none; color: inherit; cursor: pointer; font-size: 14px; line-height: 1; padding: 0; }

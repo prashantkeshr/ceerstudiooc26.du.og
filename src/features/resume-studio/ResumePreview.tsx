@@ -202,6 +202,16 @@ export function ResumePreview({ data, editing = false, commit }: {
     '--page-h': `${dims.h}px`,
   } as CSSProperties;
 
+  // Per-element overrides (only set when chosen, so CSS defaults apply otherwise).
+  const dz = data.design;
+  const vars: Record<string, string | number> = {};
+  if (dz.nameColor) vars['--r-name-color'] = dz.nameColor;
+  if (dz.headingColor) vars['--r-heading-color'] = dz.headingColor;
+  if (dz.textColor) vars['--r-text-color'] = dz.textColor;
+  if (dz.nameScale) vars['--r-name-scale'] = dz.nameScale;
+  if (dz.headingScale) vars['--r-heading-scale'] = dz.headingScale;
+  Object.assign(style, vars);
+
   const name = (
     <>
       <Editable as="div" className="r-name" editing={ec.on} value={c.fullName} placeholder="Your Name" onCommit={(v) => ec.commit((p) => ({ ...p, fullName: v }))} />

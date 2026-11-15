@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useRef, useState, type DragEvent } from 'react';
 import type {
   CertificationEntry,
   CustomSection,
@@ -40,6 +40,14 @@ function moveItem<T>(arr: T[], index: number, dir: -1 | 1): T[] {
   return copy;
 }
 
+function reorder<T>(arr: T[], from: number, to: number): T[] {
+  if (from === to || from < 0 || to < 0) return arr;
+  const copy = arr.slice();
+  const [m] = copy.splice(from, 1);
+  copy.splice(to, 0, m);
+  return copy;
+}
+
 function EntryToolbar({ onUp, onDown, onDup, onRemove, canUp, canDown, label }: {
   onUp: () => void; onDown: () => void; onDup: () => void; onRemove: () => void; canUp: boolean; canDown: boolean; label: string;
 }) {
@@ -55,11 +63,16 @@ function EntryToolbar({ onUp, onDown, onDup, onRemove, canUp, canDown, label }: 
 
 // --- bullet list editor -------------------------------------------------
 function Bullets({ bullets, onChange }: { bullets: string[]; onChange: (b: string[]) => void }) {
+  const from = useRef<number | null>(null);
   return (
     <div className="field">
       <label>Bullet points</label>
       {bullets.map((b, i) => (
-        <div className="row" key={i} style={{ marginBottom: 6 }}>
+        <div className="row" key={i} style={{ marginBottom: 6, gap: 4 }}
+          onDragOver={(e) => { if (from.current !== null) e.preventDefault(); }}
+          onDrop={(e) => { if (from.current !== null) { e.preventDefault(); onChange(reorder(bullets, from.current, i)); from.current = null; } }}>
+          <span className="drag-handle" draggable aria-hidden title="Drag to reorder"
+            onDragStart={(e) => { from.current = i; e.dataTransfer.effectAllowed = 'move'; }} onDragEnd={() => { from.current = null; }}><Icon name="drag" size={14} /></span>
           <input className="input" value={b} placeholder="Achievement or responsibility…" onChange={(e) => { const n = bullets.slice(); n[i] = e.target.value; onChange(n); }} />
           <button className="btn btn-sm btn-ghost btn-icon" aria-label="Remove bullet" onClick={() => onChange(bullets.filter((_, j) => j !== i))}><Icon name="x" size={15} /></button>
         </div>
@@ -115,6 +128,24 @@ export function ResumeEditor({ content, patch }: { content: ResumeContent; patch
   const updateList = <K extends keyof ResumeContent>(key: K, list: ResumeContent[K]) =>
     patch((prev) => ({ ...prev, [key]: list }));
 
+  // Drag-and-drop reordering for repeatable entries. One drag at a time; drops
+  // only apply within the same list.
+  const dnd = useRef<{ list: string; from: number } | null>(null);
+  const handleProps = (list: string, i: number) => ({
+    draggable: true,
+    className: 'drag-handle',
+    title: 'Drag to reorder',
+    'aria-hidden': true,
+    onDragStart: (e: DragEvent) => { dnd.current = { list, from: i }; e.dataTransfer.effectAllowed = 'move'; },
+    onDragEnd: () => { dnd.current = null; },
+  });
+  const dropProps = <K extends keyof ResumeContent>(list: string, i: number, key: K, arr: unknown[]) => ({
+    onDragOver: (e: DragEvent) => { if (dnd.current?.list === list) e.preventDefault(); },
+    onDrop: (e: DragEvent) => {
+      if (dnd.current?.list === list) { e.preventDefault(); updateList(key, reorder(arr, dnd.current.from, i) as ResumeContent[K]); dnd.current = null; }
+    },
+  });
+
   return (
     <div className="panel-pad">
       {/* Details */}
@@ -147,9 +178,11 @@ export function ResumeEditor({ content, patch }: { content: ResumeContent; patch
       {/* Experience */}
       <SectionBox title="Experience">
         {c.experience.map((e, i) => (
-          <div className="entry" key={e.id}>
-            <div className="row" style={{ justifyContent: 'space-between', marginBottom: 6 }}>
+          <div className="entry" key={e.id} {...dropProps('exp', i, 'experience', c.experience)}>
+            <div className="row" style={{ marginBottom: 6, gap: 6 }}>
+              <span {...handleProps('exp', i)}><Icon name="drag" size={15} /></span>
               <strong style={{ fontSize: 13 }}>{e.role || e.company || `Role ${i + 1}`}</strong>
+              <span className="spacer" />
               <EntryToolbar label="role" canUp={i > 0} canDown={i < c.experience.length - 1}
                 onUp={() => updateList('experience', moveItem(c.experience, i, -1))}
                 onDown={() => updateList('experience', moveItem(c.experience, i, 1))}
@@ -176,9 +209,11 @@ export function ResumeEditor({ content, patch }: { content: ResumeContent; patch
       {/* Education */}
       <SectionBox title="Education">
         {c.education.map((e, i) => (
-          <div className="entry" key={e.id}>
-            <div className="row" style={{ justifyContent: 'space-between', marginBottom: 6 }}>
+          <div className="entry" key={e.id} {...dropProps('edu', i, 'education', c.education)}>
+            <div className="row" style={{ marginBottom: 6, gap: 6 }}>
+              <span {...handleProps('edu', i)}><Icon name="drag" size={15} /></span>
               <strong style={{ fontSize: 13 }}>{e.degree || e.institution || `Education ${i + 1}`}</strong>
+              <span className="spacer" />
               <EntryToolbar label="education" canUp={i > 0} canDown={i < c.education.length - 1}
                 onUp={() => updateList('education', moveItem(c.education, i, -1))}
                 onDown={() => updateList('education', moveItem(c.education, i, 1))}
@@ -217,9 +252,11 @@ export function ResumeEditor({ content, patch }: { content: ResumeContent; patch
       {/* Projects */}
       <SectionBox title="Projects" defaultOpen={false}>
         {c.projects.map((p: ProjectEntry, i) => (
-          <div className="entry" key={p.id}>
-            <div className="row" style={{ justifyContent: 'space-between', marginBottom: 6 }}>
+          <div className="entry" key={p.id} {...dropProps('prj', i, 'projects', c.projects)}>
+            <div className="row" style={{ marginBottom: 6, gap: 6 }}>
+              <span {...handleProps('prj', i)}><Icon name="drag" size={15} /></span>
               <strong style={{ fontSize: 13 }}>{p.name || `Project ${i + 1}`}</strong>
+              <span className="spacer" />
               <EntryToolbar label="project" canUp={i > 0} canDown={i < c.projects.length - 1}
                 onUp={() => updateList('projects', moveItem(c.projects, i, -1))}
                 onDown={() => updateList('projects', moveItem(c.projects, i, 1))}

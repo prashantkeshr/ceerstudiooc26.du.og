@@ -12,7 +12,8 @@
 }
 
 .r-header { margin-bottom: 14px; }
-.r-name { font-size: 2em; font-weight: 800; letter-spacing: -0.01em; }
+.paper { color: var(--r-text-color, #1a1a1a); }
+.r-name { font-size: calc(2em * var(--r-name-scale, 1)); font-weight: 800; letter-spacing: -0.01em; color: var(--r-name-color, inherit); }
 .r-name, .r-sec-title { font-family: var(--doc-heading-font, var(--doc-font)); }
 .r-title { font-size: 1.05em; color: #444; margin-top: 2px; }
 .r-contact { display: flex; flex-wrap: wrap; gap: 4px 14px; margin-top: 8px; font-size: 0.82em; color: #333; }
@@ -20,13 +21,13 @@
 .r-contact .sep { color: #bbb; }
 
 .r-section { margin-bottom: var(--doc-sec-gap, 18px); }
-.r-sec-title { font-size: 0.95em; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 8px; color: var(--r-accent); }
+.r-sec-title { font-size: calc(0.95em * var(--r-heading-scale, 1)); font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 8px; color: var(--r-heading-color, var(--r-accent)); }
 
 /* Heading style variants (data-heading on .paper) */
 .paper[data-heading='underline'] .r-sec-title { border-bottom: 2px solid currentColor; padding-bottom: 3px; }
 .paper[data-heading='bar'] .r-sec-title { padding-left: 10px; border-left: 4px solid var(--r-accent); }
 .paper[data-heading='plain'] .r-sec-title { text-transform: none; letter-spacing: 0; color: #111; border-bottom: 1px solid #ddd; padding-bottom: 3px; }
-.paper[data-heading='uppercase'] .r-sec-title { letter-spacing: 0.18em; font-size: 0.8em; }
+.paper[data-heading='uppercase'] .r-sec-title { letter-spacing: 0.18em; font-size: calc(0.8em * var(--r-heading-scale, 1)); }
 
 .r-item { margin-bottom: 11px; }
 .r-item:last-child { margin-bottom: 0; }
@@ -72,15 +73,15 @@
 
 /* ---------- Minimalist ---------- */
 .tpl-minimal { padding: 56px 60px; }
-.tpl-minimal .r-name { font-weight: 300; font-size: 2.1em; letter-spacing: 0.02em; }
+.tpl-minimal .r-name { font-weight: 300; font-size: calc(2.1em * var(--r-name-scale, 1)); letter-spacing: 0.02em; }
 .tpl-minimal .r-title { color: #777; font-weight: 400; }
-.tpl-minimal .r-sec-title { color: #999; font-weight: 600; letter-spacing: 0.22em; font-size: 0.72em; border: none !important; padding: 0 !important; }
+.tpl-minimal .r-sec-title { color: #999; font-weight: 600; letter-spacing: 0.22em; font-size: calc(0.72em * var(--r-heading-scale, 1)); border: none !important; padding: 0 !important; }
 .tpl-minimal .r-section { margin-bottom: 24px; }
 .tpl-minimal .r-date { color: #999; }
 
 /* ---------- Executive ---------- */
 .tpl-executive .r-header { border-bottom: 3px solid var(--r-accent); padding-bottom: 14px; }
-.tpl-executive .r-name { font-size: 2.3em; font-weight: 800; }
+.tpl-executive .r-name { font-size: calc(2.3em * var(--r-name-scale, 1)); font-weight: 800; }
 .tpl-executive .r-title { text-transform: uppercase; letter-spacing: 0.14em; font-size: 0.82em; color: var(--r-accent); margin-top: 6px; }
 .tpl-executive .r-role { font-size: 1.02em; }
 
@@ -88,13 +89,13 @@
 .tpl-academic { padding: 44px 50px; }
 .tpl-academic .r-header { text-align: center; }
 .tpl-academic .r-contact { justify-content: center; }
-.tpl-academic .r-sec-title { color: #111; border-bottom: 1px solid #333; padding-bottom: 2px; text-transform: none; letter-spacing: 0.01em; font-variant: small-caps; font-size: 1.05em; }
+.tpl-academic .r-sec-title { color: #111; border-bottom: 1px solid #333; padding-bottom: 2px; text-transform: none; letter-spacing: 0.01em; font-variant: small-caps; font-size: calc(1.05em * var(--r-heading-scale, 1)); }
 .tpl-academic .r-section { margin-bottom: 16px; }
 .tpl-academic .r-bullets { padding-left: 16px; }
 
 /* ---------- Technical (sidebar) ---------- */
 .tpl-technical.two-col .r-side { background: #f4f6fa; border-radius: 8px; padding: 16px; }
-.tpl-technical .r-side .r-name { font-size: 1.5em; }
+.tpl-technical .r-side .r-name { font-size: calc(1.5em * var(--r-name-scale, 1)); }
 .tpl-technical .r-side .r-sec-title { color: var(--r-accent); }
 .tpl-technical .r-chip-list { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 3px; }
 .tpl-technical .r-chip-list span { background: var(--r-accent); color: #fff; border-radius: 4px; padding: 1px 7px; font-size: 0.74em; }
@@ -103,9 +104,9 @@
 .tpl-elegant { padding: 52px 56px; }
 .tpl-elegant .r-header { text-align: center; }
 .tpl-elegant .r-contact { justify-content: center; }
-.tpl-elegant .r-name { font-weight: 500; font-size: 2.4em; letter-spacing: 0.01em; }
+.tpl-elegant .r-name { font-weight: 500; font-size: calc(2.4em * var(--r-name-scale, 1)); letter-spacing: 0.01em; }
 .tpl-elegant .r-title { color: var(--r-accent); font-style: italic; letter-spacing: 0.04em; }
-.tpl-elegant .r-sec-title { text-align: center; text-transform: uppercase; letter-spacing: 0.24em; font-size: 0.78em; color: #333; position: relative; border: none !important; }
+.tpl-elegant .r-sec-title { text-align: center; text-transform: uppercase; letter-spacing: 0.24em; font-size: calc(0.78em * var(--r-heading-scale, 1)); color: #333; position: relative; border: none !important; }
 .tpl-elegant .r-sec-title::after { content: ''; display: block; width: 44px; height: 2px; background: var(--r-accent); margin: 6px auto 0; }
 
 /* ---------- Creative (coloured sidebar) ---------- */
@@ -119,13 +120,29 @@
 
 /* ---------- Compact ---------- */
 .tpl-compact { padding: 36px 44px; }
-.tpl-compact .r-name { font-size: 1.7em; }
+.tpl-compact .r-name { font-size: calc(1.7em * var(--r-name-scale, 1)); }
 .tpl-compact .r-section { margin-bottom: 12px; }
 .tpl-compact .r-item { margin-bottom: 7px; }
-.tpl-compact .r-sec-title { font-size: 0.82em; margin-bottom: 5px; }
+.tpl-compact .r-sec-title { font-size: calc(0.82em * var(--r-heading-scale, 1)); margin-bottom: 5px; }
 .tpl-compact .r-bullets { margin-top: 3px; }
 
 /* ---------- Corporate (two-column default) ---------- */
 .tpl-corporate .r-header { border-bottom: 3px solid var(--r-accent); padding-bottom: 10px; margin-bottom: 18px; }
 .tpl-corporate.two-col .r-side .r-sec-title { color: var(--r-accent); }
 .tpl-corporate .r-name { font-weight: 800; }
+
+/* ---------- Slate (dark header band) ---------- */
+.tpl-slate { padding: 0 0 48px; }
+.tpl-slate .r-header { background: var(--r-accent); padding: 34px 52px 24px; margin-bottom: 22px; }
+.tpl-slate .r-header, .tpl-slate .r-header * { color: #fff !important; }
+.tpl-slate .r-header .r-title { color: rgba(255,255,255,0.82) !important; }
+.tpl-slate .r-header .r-contact a { text-decoration: underline; }
+.tpl-slate .r-section, .tpl-slate > .r-section { padding-left: 52px; padding-right: 52px; }
+.tpl-slate .r-name { font-weight: 800; }
+
+/* ---------- Editorial (magazine serif) ---------- */
+.tpl-editorial { padding: 50px 54px; }
+.tpl-editorial .r-header { border-bottom: 3px double #111; padding-bottom: 14px; }
+.tpl-editorial .r-name { font-weight: 600; font-size: calc(2.6em * var(--r-name-scale, 1)); letter-spacing: -0.01em; }
+.tpl-editorial .r-title { color: var(--r-accent); font-style: italic; }
+.tpl-editorial .r-sec-title { color: #111; }
