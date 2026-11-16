@@ -1,9 +1,10 @@
-import { useRef, useState } from 'react';
+import { useMemo, useRef, useState } from 'react';
 import type { FontKey, HeadingStyle, ResumeData, ResumeDesign } from '../../core/models/types';
 import { TEMPLATES, getTemplate } from './templates/registry';
 import { SECTION_TITLES, isBuiltIn } from './sections';
 import { defaultDesign } from '../../core/models/factory';
 import { fontsByCategory } from './fonts';
+import { TemplateThumb, thumbContent } from './TemplateThumb';
 import { Icon } from '../../components/ui/Icon';
 import { useStore } from '../../state/store';
 
@@ -75,6 +76,7 @@ function Range({ label, value, min, max, step, format, onChange }: {
 export function DesignPanel({ data, patchData }: { data: ResumeData; patchData: PatchData }) {
   const { mode } = useStore();
   const d = data.design;
+  const thumbC = useMemo(() => thumbContent(data.content), [data.content]);
   const dragKey = useRef<string | null>(null);
   const [dragOver, setDragOver] = useState<string | null>(null);
 
@@ -167,7 +169,7 @@ export function DesignPanel({ data, patchData }: { data: ResumeData; patchData: 
       <div className="tpl-pick">
         {TEMPLATES.map((t) => (
           <button key={t.id} className={`tpl-opt ${t.id === data.templateId ? 'active' : ''}`} onClick={() => switchTemplate(t.id)} title={t.description}>
-            <div className="tpl-thumb" style={{ background: t.thumb }} />
+            <TemplateThumb templateId={t.id} content={thumbC} pageSize={d.pageSize} />
             <strong>{t.name}</strong>
             <span>{t.category}</span>
           </button>

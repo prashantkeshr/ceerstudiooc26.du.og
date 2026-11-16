@@ -301,6 +301,10 @@ button { font-family: inherit; }
 .tpl-opt strong { font-size: 13px; display: block; }
 .tpl-opt span { font-size: 11.5px; color: var(--text-faint); }
 .tpl-thumb { height: 60px; border-radius: 4px; margin-bottom: 7px; border: 1px solid var(--border); }
+/* Live, scaled template thumbnails */
+.tpl-live { width: 150px; height: 150px; margin: 0 auto 7px; overflow: hidden; border: 1px solid var(--border); border-radius: 6px; background: #fff; }
+.tpl-live-scale { width: 794px; transform: scale(0.189); transform-origin: top left; pointer-events: none; }
+.tpl-live-scale .paper { box-shadow: none; min-height: 0; }
 
 .range { width: 100%; }
 .range-label { display: flex; justify-content: space-between; font-size: 12.5px; color: var(--text-soft); }

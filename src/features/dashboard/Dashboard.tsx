@@ -1,8 +1,9 @@
-import { useRef, useState } from 'react';
+import { useMemo, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useStore } from '../../state/store';
 import { TEMPLATES } from '../resume-studio/templates/registry';
-import { newResumeProject, newWebsiteProject, newCoverLetterProject, contentFromProfile } from '../../core/models/factory';
+import { newResumeProject, newWebsiteProject, newCoverLetterProject, contentFromProfile, emptyContent } from '../../core/models/factory';
+import { TemplateThumb, thumbContent } from '../resume-studio/TemplateThumb';
 import { sampleProfile, sampleResume } from '../../core/sampleData';
 import * as dbApi from '../../core/storage/db';
 import { buildBackup, parseBackup, download, safeFilename } from '../../services/exports/backup';
@@ -35,6 +36,7 @@ export function Dashboard() {
   const fileRef = useRef<HTMLInputElement>(null);
 
   const hasProfile = profile.fullName.trim().length > 0;
+  const pickThumbC = useMemo(() => thumbContent(hasProfile ? contentFromProfile(profile) : emptyContent()), [hasProfile, profile]);
 
   const createResume = async (templateId: string) => {
     const proj = newResumeProject({
@@ -199,7 +201,7 @@ export function Dashboard() {
             <div className="tpl-pick" style={{ gridTemplateColumns: 'repeat(auto-fill, minmax(180px, 1fr))' }}>
               {TEMPLATES.map((t) => (
                 <button key={t.id} className="tpl-opt" onClick={() => createResume(t.id)}>
-                  <div className="tpl-thumb" style={{ background: t.thumb, height: 84 }} />
+                  <TemplateThumb templateId={t.id} content={pickThumbC} pageSize="a4" />
                   <strong>{t.name}</strong>
                   <span>{t.description}</span>
                 </button>
