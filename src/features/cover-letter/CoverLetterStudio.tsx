@@ -57,6 +57,8 @@ export function CoverLetterStudio() {
   const [busy, setBusy] = useState<string | null>(null);
   const [showExport, setShowExport] = useState(false);
   const [pane, setPane] = useState<Pane>('content');
+  const [pageInfo, setPageInfo] = useState<{ pages: number; overflow: boolean }>({ pages: 1, overflow: false });
+  const previewRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     let cancelled = false;
@@ -84,6 +86,26 @@ export function CoverLetterStudio() {
 
   const previewData = useMemo(() => project?.data, [project]);
 
+  // --- Page-fit meter: measure the rendered letter vs one page's height ---
+  const pageHeightPx = project?.data.design.pageSize === 'letter' ? 1056 : 1123;
+  useEffect(() => {
+    const el = previewRef.current;
+    if (!el) return;
+    const measure = () => {
+      const paper = el.querySelector('.paper') as HTMLElement | null;
+      if (!paper) return;
+      const h = paper.scrollHeight;
+      if (h === 0) return; // hidden pane — skip until it has layout
+      setPageInfo({ pages: Math.max(1, Math.ceil(h / pageHeightPx - 0.015)), overflow: h > pageHeightPx + 2 });
+    };
+    measure(); // synchronous reflow read — works even when rAF is throttled
+    const t = window.setTimeout(measure, 120);
+    const ro = new ResizeObserver(measure);
+    const paper = el.querySelector('.paper');
+    if (paper) ro.observe(paper);
+    return () => { window.clearTimeout(t); ro.disconnect(); };
+  }, [project, pageHeightPx, pane]);
+
   if (missing) return <div className="content" style={{ textAlign: 'center', paddingTop: 50 }}><h2>Cover letter not found</h2><Link className="btn btn-primary" to="/">Back to dashboard</Link></div>;
   if (!project || !previewData) return <div className="content" style={{ paddingTop: 50, textAlign: 'center' }}><p className="muted">Loading…</p></div>;
 
@@ -103,12 +125,28 @@ export function CoverLetterStudio() {
   const syncSender = () => setD({ sender: { name: profile.fullName, title: profile.title, email: profile.email, phone: profile.phone, location: profile.location, website: profile.website } });
   const moveBody = (i: number, dir: -1 | 1) => { const j = i + dir; if (j < 0 || j >= d.body.length) return; const b = d.body.slice(); [b[i], b[j]] = [b[j], b[i]]; setD({ body: b }); };
 
+  const fitToPage = () => {
+    const paper = previewRef.current?.querySelector('.paper') as HTMLElement | null;
+    if (!paper) return;
+    const h = paper.scrollHeight;
+    if (h <= pageHeightPx) return;
+    setD({ design: {
+      ...d.design,
+      fontScale: Math.max(0.8, Math.min(1.15, d.design.fontScale * (pageHeightPx / h) * 0.98)),
+      lineHeight: Math.max(1.2, Math.round(d.design.lineHeight * 0.96 * 100) / 100),
+    } });
+  };
+
   return (
     <div>
       <div className="panel-head no-print" style={{ position: 'sticky', top: 53, gap: 10 }}>
         <Link className="btn btn-sm btn-ghost btn-icon" to="/" aria-label="Back"><Icon name="home" /></Link>
         <input className="input" style={{ maxWidth: 300, fontWeight: 600 }} value={project.title} onChange={(e) => setTitle(e.target.value)} aria-label="Cover letter title" />
         <span className="save-pill" role="status" aria-live="polite"><span className={`save-dot ${save}`} />{busy ?? saveText}</span>
+        <span className="save-pill" title="Estimated printed page count" style={{ color: pageInfo.overflow ? 'var(--warning)' : 'var(--text-faint)' }}>
+          <Icon name="file" size={13} /> {pageInfo.pages} page{pageInfo.pages > 1 ? 's' : ''}
+        </span>
+        {pageInfo.overflow && <button className="btn btn-sm" onClick={fitToPage} title="Scale the letter down to fit one page">Fit to page</button>}
         <span className="spacer" />
         <div style={{ position: 'relative' }}>
           <button className="btn btn-sm btn-primary" onClick={() => setShowExport((s) => !s)}><Icon name="download" size={15} /> Export</button>
@@ -176,7 +214,7 @@ export function CoverLetterStudio() {
         </div>
 
         <div className={`studio-center studio-pane ${pane === 'preview' ? 'active' : ''}`}>
-          <div className="preview-wrap"><LetterPreview d={previewData} /></div>
+          <div className="preview-wrap" ref={previewRef}><LetterPreview d={previewData} /></div>
         </div>
       </div>
     </div>
