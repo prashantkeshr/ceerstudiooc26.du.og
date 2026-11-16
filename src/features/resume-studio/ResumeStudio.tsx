@@ -69,6 +69,8 @@ export function ResumeStudio() {
   const [compareSnap, setCompareSnap] = useState<ResumeSnapshot | null>(null);
   const [editing, setEditing] = useState(false);
   const [busy, setBusy] = useState<string | null>(null);
+  const [pageInfo, setPageInfo] = useState<{ pages: number; overflow: boolean }>({ pages: 1, overflow: false });
+  const previewRef = useRef<HTMLDivElement>(null);
 
   // Undo / redo history (resume data snapshots).
   const past = useRef<ResumeData[]>([]);
@@ -165,6 +167,37 @@ export function ResumeStudio() {
   const issueCount = findings.filter((f) => f.id !== 'ok').length;
   const writingFindings: WritingFinding[] = useMemo(() => (project ? runWritingChecks(project.data) : []), [project]);
   const writingCount = writingFindings.filter((f) => f.id !== 'ok').length;
+
+  // --- Page-fit meter: measure the rendered paper vs one page's height ---
+  const pageHeightPx = project?.data.design.pageSize === 'letter' ? 1056 : 1123;
+  useEffect(() => {
+    const el = previewRef.current;
+    if (!el) return;
+    const measure = () => {
+      const paper = el.querySelector('.paper') as HTMLElement | null;
+      if (!paper) return;
+      const h = paper.scrollHeight;
+      if (h === 0) return; // hidden pane — skip until it has layout
+      setPageInfo({ pages: Math.max(1, Math.ceil(h / pageHeightPx - 0.015)), overflow: h > pageHeightPx + 2 });
+    };
+    measure(); // synchronous reflow read — works even when rAF is throttled
+    const t = window.setTimeout(measure, 120);
+    const ro = new ResizeObserver(measure);
+    const paper = el.querySelector('.paper');
+    if (paper) ro.observe(paper);
+    return () => { window.clearTimeout(t); ro.disconnect(); };
+  }, [project, pageHeightPx, pane]);
+
+  const fitToPage = () => {
+    const paper = previewRef.current?.querySelector('.paper') as HTMLElement | null;
+    if (!paper) return;
+    const h = paper.scrollHeight;
+    if (h <= pageHeightPx) return;
+    patchData((d) => {
+      const target = Math.max(0.8, Math.min(1.15, d.design.fontScale * (pageHeightPx / h) * 0.97));
+      return { ...d, design: { ...d.design, fontScale: target, sectionSpacing: Math.max(10, Math.round(d.design.sectionSpacing * 0.9)) } };
+    });
+  };
 
   const setTitle = (title: string) => setProject((p) => {
     if (!p) return p;
@@ -280,6 +313,10 @@ export function ResumeStudio() {
           <Icon name="copy" size={15} /> Versions{project.data.snapshots.length ? ` (${project.data.snapshots.length})` : ''}
         </button>
         <button className="btn btn-sm btn-ghost" onClick={duplicate} title="Duplicate as a separate resume">Duplicate</button>
+        <span className="save-pill" title="Estimated printed page count" style={{ color: pageInfo.overflow ? 'var(--warning)' : 'var(--text-faint)' }}>
+          <Icon name="file" size={13} /> {pageInfo.pages} page{pageInfo.pages > 1 ? 's' : ''}
+        </span>
+        {pageInfo.overflow && <button className="btn btn-sm" onClick={fitToPage} title="Scale the resume down to fit one page">Fit to page</button>}
         <div style={{ position: 'relative' }}>
           <button className="btn btn-sm btn-primary" onClick={() => setShowExport((s) => !s)}><Icon name="download" size={15} /> Export</button>
           {showExport && (
@@ -316,7 +353,7 @@ export function ResumeStudio() {
               Editing on the page — click any dashed field to change it. Enter saves, Esc cancels. This edits the same data as the Content panel.
             </div>
           )}
-          <div className="preview-wrap">
+          <div className="preview-wrap" ref={previewRef}>
             <ResumePreview data={project.data} editing={editing} commit={patchContent} />
           </div>
         </div>
