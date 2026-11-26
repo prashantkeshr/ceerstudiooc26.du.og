@@ -9,6 +9,9 @@ import { coverLetterToText, coverLetterToDocxBlob } from '../../services/exports
 import { downloadBlob } from '../../services/exports/docx';
 import { Icon } from '../../components/ui/Icon';
 import { FONT_STACK, FONTS, ensureFont } from '../resume-studio/fonts';
+import { runCoverLetterChecks } from '../../services/quality/coverLetterChecks';
+import type { Finding } from '../../services/quality/checks';
+import { useEscape } from '../../hooks/useEscape';
 
 const PAGE = { a4: { w: 794, h: 1123 }, letter: { w: 816, h: 1056 } };
 const ACCENTS = ['#2563eb', '#0d9488', '#7c3aed', '#db2777', '#ea580c', '#15803d', '#1f2937', '#b91c1c'];
@@ -56,6 +59,7 @@ export function CoverLetterStudio() {
   const [save, setSave] = useState<'idle' | 'saving' | 'saved' | 'error'>('idle');
   const [busy, setBusy] = useState<string | null>(null);
   const [showExport, setShowExport] = useState(false);
+  const [showChecks, setShowChecks] = useState(false);
   const [pane, setPane] = useState<Pane>('content');
   const [pageInfo, setPageInfo] = useState<{ pages: number; overflow: boolean }>({ pages: 1, overflow: false });
   const previewRef = useRef<HTMLDivElement>(null);
@@ -106,6 +110,10 @@ export function CoverLetterStudio() {
     return () => { window.clearTimeout(t); ro.disconnect(); };
   }, [project, pageHeightPx, pane]);
 
+  const findings: Finding[] = useMemo(() => (project ? runCoverLetterChecks(project.data) : []), [project]);
+  const issueCount = findings.filter((f) => f.id !== 'ok' && f.severity !== 'info').length;
+  useEscape(showChecks || showExport, () => { setShowChecks(false); setShowExport(false); });
+
   if (missing) return <div className="content" style={{ textAlign: 'center', paddingTop: 50 }}><h2>Cover letter not found</h2><Link className="btn btn-primary" to="/">Back to dashboard</Link></div>;
   if (!project || !previewData) return <div className="content" style={{ paddingTop: 50, textAlign: 'center' }}><p className="muted">Loading…</p></div>;
 
@@ -147,6 +155,9 @@ export function CoverLetterStudio() {
           <Icon name="file" size={13} /> {pageInfo.pages} page{pageInfo.pages > 1 ? 's' : ''}
         </span>
         {pageInfo.overflow && <button className="btn btn-sm" onClick={fitToPage} title="Scale the letter down to fit one page">Fit to page</button>}
+        <button className="btn btn-sm" onClick={() => setShowChecks(true)} title="Rule-based review of the letter">
+          <Icon name={issueCount ? 'alert' : 'check'} size={15} /> Checks{issueCount ? ` (${issueCount})` : ''}
+        </button>
         <span className="spacer" />
         <div style={{ position: 'relative' }}>
           <button className="btn btn-sm btn-primary" onClick={() => setShowExport((s) => !s)}><Icon name="download" size={15} /> Export</button>
@@ -217,6 +228,30 @@ export function CoverLetterStudio() {
           <div className="preview-wrap" ref={previewRef}><LetterPreview d={previewData} /></div>
         </div>
       </div>
+
+      {/* Checks drawer */}
+      {showChecks && (
+        <div role="dialog" aria-modal="true" aria-label="Cover letter checks" className="no-print" onClick={() => setShowChecks(false)}
+          style={{ position: 'fixed', inset: 0, background: 'rgba(15,23,42,0.4)', zIndex: 90, display: 'flex', justifyContent: 'flex-end' }}>
+          <div className="card" onClick={(e) => e.stopPropagation()} style={{ width: 'min(420px, 100%)', height: '100%', borderRadius: 0, overflow: 'auto' }}>
+            <div className="panel-head">Cover letter checks <span className="spacer" /><button className="btn btn-sm btn-ghost btn-icon" aria-label="Close" onClick={() => setShowChecks(false)}><Icon name="x" /></button></div>
+            <div className="panel-pad">
+              <p className="muted" style={{ marginTop: 0, fontSize: 13 }}>Deterministic checks run locally. They are guidance only and never a guarantee of any outcome.</p>
+              {findings.map((f) => (
+                <div key={f.id} className="entry" style={{ display: 'flex', gap: 10 }}>
+                  <span className={`sev-${f.severity}`} style={{ marginTop: 1 }}>
+                    <Icon name={f.severity === 'error' ? 'alert' : f.severity === 'warning' ? 'alert' : f.id === 'ok' ? 'check' : 'info'} size={17} />
+                  </span>
+                  <div>
+                    <div style={{ fontSize: 13.5, fontWeight: 600 }}>{f.message}</div>
+                    {f.hint && <div className="muted" style={{ fontSize: 12.5 }}>{f.hint}</div>}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
