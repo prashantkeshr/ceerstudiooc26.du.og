@@ -10,6 +10,7 @@ import { ResumePreview } from './ResumePreview';
 import { Icon } from '../../components/ui/Icon';
 import { runResumeChecks, type Finding } from '../../services/quality/checks';
 import { runWritingChecks, type WritingFinding } from '../../services/quality/writing';
+import { analyzeJobMatch, resumeSearchText } from '../../services/quality/jobMatch';
 import { resumeToText } from '../../services/exports/text';
 import { buildBackup, download, safeFilename } from '../../services/exports/backup';
 import { resumeToDocxBlob, downloadBlob } from '../../services/exports/docx';
@@ -66,6 +67,8 @@ export function ResumeStudio() {
   const [showExport, setShowExport] = useState(false);
   const [showVersions, setShowVersions] = useState(false);
   const [showWriting, setShowWriting] = useState(false);
+  const [showJobMatch, setShowJobMatch] = useState(false);
+  const [jobText, setJobText] = useState('');
   const [compareSnap, setCompareSnap] = useState<ResumeSnapshot | null>(null);
   const [editing, setEditing] = useState(false);
   const [busy, setBusy] = useState<string | null>(null);
@@ -160,13 +163,21 @@ export function ResumeStudio() {
     return () => window.removeEventListener('keydown', onKey);
   }, [undo, redo]);
 
-  const anyOverlay = showChecks || showWriting || showVersions || showExport || compareSnap !== null;
-  useEscape(anyOverlay, () => { setShowChecks(false); setShowWriting(false); setShowVersions(false); setShowExport(false); setCompareSnap(null); });
+  const anyOverlay = showChecks || showWriting || showJobMatch || showVersions || showExport || compareSnap !== null;
+  useEscape(anyOverlay, () => { setShowChecks(false); setShowWriting(false); setShowJobMatch(false); setShowVersions(false); setShowExport(false); setCompareSnap(null); });
 
   const findings: Finding[] = useMemo(() => (project ? runResumeChecks(project.data) : []), [project]);
   const issueCount = findings.filter((f) => f.id !== 'ok').length;
   const writingFindings: WritingFinding[] = useMemo(() => (project ? runWritingChecks(project.data) : []), [project]);
   const writingCount = writingFindings.filter((f) => f.id !== 'ok').length;
+
+  // Load the saved target job description when a resume opens.
+  useEffect(() => { if (project) setJobText(project.data.jobTarget ?? ''); /* eslint-disable-next-line react-hooks/exhaustive-deps */ }, [project?.id]);
+  const saveJobText = useCallback((v: string) => { setJobText(v); commit((d) => ({ ...d, jobTarget: v }), false); }, [commit]);
+  const jobMatch = useMemo(
+    () => analyzeJobMatch(project ? resumeSearchText(project.data.content) : '', jobText),
+    [project, jobText],
+  );
 
   // --- Page-fit meter: measure the rendered paper vs one page's height ---
   const pageHeightPx = project?.data.design.pageSize === 'letter' ? 1056 : 1123;
@@ -309,6 +320,9 @@ export function ResumeStudio() {
         <button className="btn btn-sm" onClick={() => setShowWriting(true)} title="Rule-based writing suggestions">
           <Icon name="file" size={15} /> Writing{writingCount ? ` (${writingCount})` : ''}
         </button>
+        <button className="btn btn-sm" onClick={() => setShowJobMatch(true)} title="Match your resume against a job description">
+          <Icon name="check" size={15} /> Job Match{jobText.trim() ? ` (${jobMatch.score}%)` : ''}
+        </button>
         <button className="btn btn-sm btn-ghost" onClick={() => setShowVersions(true)} title="Version snapshots">
           <Icon name="copy" size={15} /> Versions{project.data.snapshots.length ? ` (${project.data.snapshots.length})` : ''}
         </button>
@@ -405,6 +419,54 @@ export function ResumeStudio() {
                     {f.hint && <div className="muted" style={{ fontSize: 12.5 }}>{f.hint}</div>}
                   </div>
                 </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Job match drawer */}
+      {showJobMatch && (
+        <div role="dialog" aria-modal="true" aria-label="Job match" className="no-print" onClick={() => setShowJobMatch(false)}
+          style={{ position: 'fixed', inset: 0, background: 'rgba(15,23,42,0.4)', zIndex: 90, display: 'flex', justifyContent: 'flex-end' }}>
+          <div className="card" onClick={(e) => e.stopPropagation()} style={{ width: 'min(460px, 100%)', height: '100%', borderRadius: 0, overflow: 'auto' }}>
+            <div className="panel-head">Job match <span className="spacer" /><button className="btn btn-sm btn-ghost btn-icon" aria-label="Close" onClick={() => setShowJobMatch(false)}><Icon name="x" /></button></div>
+            <div className="panel-pad">
+              <p className="muted" style={{ marginTop: 0, fontSize: 13 }}>Paste a job description. Everything runs locally — nothing is sent anywhere. The score reflects how many of the role’s key terms already appear in your resume. It’s a tailoring guide, not a guarantee; only add terms that are genuinely true of you.</p>
+              <textarea className="textarea" rows={6} placeholder="Paste the job description here…" value={jobText} onChange={(e) => saveJobText(e.target.value)} style={{ width: '100%' }} />
+              {jobText.trim() && (jobMatch.total > 0 ? (
+                <>
+                  <div className="row" style={{ alignItems: 'center', gap: 10, margin: '12px 0 4px' }}>
+                    <strong style={{ fontSize: 22, color: jobMatch.score >= 60 ? 'var(--success, #15803d)' : jobMatch.score >= 35 ? 'var(--warning)' : 'var(--danger, #b91c1c)' }}>{jobMatch.score}%</strong>
+                    <span className="muted" style={{ fontSize: 13 }}>{jobMatch.matchedCount} of {jobMatch.total} key terms covered</span>
+                  </div>
+                  <div style={{ height: 8, borderRadius: 5, background: 'var(--border)', overflow: 'hidden', marginBottom: 14 }}>
+                    <div style={{ width: `${jobMatch.score}%`, height: '100%', background: jobMatch.score >= 60 ? 'var(--success, #15803d)' : jobMatch.score >= 35 ? 'var(--warning)' : 'var(--danger, #b91c1c)' }} />
+                  </div>
+                  {jobMatch.terms.some((t) => !t.matched) && (
+                    <>
+                      <h4 style={{ margin: '0 0 6px' }}>Missing from your resume</h4>
+                      <p className="faint" style={{ fontSize: 12, marginTop: 0 }}>Consider weaving in any that truly apply to you.</p>
+                      <div className="chips" style={{ display: 'flex', flexWrap: 'wrap', gap: 6, marginBottom: 14 }}>
+                        {jobMatch.terms.filter((t) => !t.matched).map((t) => (
+                          <span key={t.term} style={{ fontSize: 12.5, padding: '3px 9px', borderRadius: 999, background: 'var(--accent-soft)', color: 'var(--accent)', border: '1px solid var(--border)' }}>{t.term}{t.count > 1 ? <span style={{ opacity: 0.6 }}> ×{t.count}</span> : null}</span>
+                        ))}
+                      </div>
+                    </>
+                  )}
+                  {jobMatch.terms.some((t) => t.matched) && (
+                    <>
+                      <h4 style={{ margin: '0 0 6px' }}>Already covered</h4>
+                      <div className="chips" style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
+                        {jobMatch.terms.filter((t) => t.matched).map((t) => (
+                          <span key={t.term} style={{ fontSize: 12.5, padding: '3px 9px', borderRadius: 999, background: 'var(--bg-soft, rgba(21,128,61,0.12))', color: 'var(--success, #15803d)', border: '1px solid var(--border)' }}>✓ {t.term}</span>
+                        ))}
+                      </div>
+                    </>
+                  )}
+                </>
+              ) : (
+                <p className="faint" style={{ fontSize: 13, textAlign: 'center', marginTop: 16 }}>No clear key terms found — try pasting a fuller description.</p>
               ))}
             </div>
           </div>

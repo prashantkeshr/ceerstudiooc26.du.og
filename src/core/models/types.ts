@@ -187,6 +187,8 @@ export interface ResumeData {
   hiddenSections: string[];
   /** Named version snapshots (schema v2+). */
   snapshots: ResumeSnapshot[];
+  /** Pasted target job description, used by the local Job Match analyzer (optional). */
+  jobTarget?: string;
 }
 
 // --- Project envelope ---------------------------------------------------

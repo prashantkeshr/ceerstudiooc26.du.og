@@ -2,6 +2,7 @@ import { describe, it, expect } from 'vitest';
 import { runResumeChecks } from '../services/quality/checks';
 import { runWritingChecks } from '../services/quality/writing';
 import { runCoverLetterChecks } from '../services/quality/coverLetterChecks';
+import { analyzeJobMatch, resumeSearchText } from '../services/quality/jobMatch';
 import { newResumeProject } from '../core/models/factory';
 import type { ResumeData, CoverLetterData } from '../core/models/types';
 
@@ -84,5 +85,47 @@ describe('runCoverLetterChecks', () => {
   it('flags a generic salutation', () => {
     const f = runCoverLetterChecks(baseLetter((d) => { d.salutation = 'To whom it may concern'; }));
     expect(f.some((x) => x.id === 'salutation-generic')).toBe(true);
+  });
+});
+
+describe('analyzeJobMatch', () => {
+  it('returns an empty result for a blank job description', () => {
+    const r = analyzeJobMatch('anything here', '');
+    expect(r.total).toBe(0);
+    expect(r.score).toBe(0);
+    expect(r.terms).toEqual([]);
+  });
+
+  it('marks resume-present terms as matched and absent ones as missing', () => {
+    const resume = 'Experienced React and TypeScript developer who built dashboards.';
+    const job = 'We want a React developer with TypeScript and GraphQL. React is central. GraphQL too.';
+    const r = analyzeJobMatch(resume, job);
+    const graphql = r.terms.find((t) => t.term === 'graphql');
+    const react = r.terms.find((t) => t.term === 'react');
+    expect(react?.matched).toBe(true);
+    expect(graphql?.matched).toBe(false);
+    expect(r.score).toBeGreaterThan(0);
+    expect(r.score).toBeLessThanOrEqual(100);
+  });
+
+  it('detects repeated multi-word phrases as a single term', () => {
+    const job = 'Project management is key. Project management drives delivery. Project management matters.';
+    const r = analyzeJobMatch('An engineer who writes code.', job);
+    expect(r.terms.some((t) => t.term === 'project management')).toBe(true);
+  });
+
+  it('ignores pure stopwords and numbers', () => {
+    const r = analyzeJobMatch('x', 'the and for with you 2024 2025 Kubernetes');
+    expect(r.terms.some((t) => t.term === 'the' || t.term === '2024')).toBe(false);
+    expect(r.terms.some((t) => t.term === 'kubernetes')).toBe(true);
+  });
+
+  it('resumeSearchText flattens content to lowercase searchable text', () => {
+    const d = newResumeProject({ title: 'T', templateId: 'modern' }).data;
+    d.content.fullName = 'Jordan Fox';
+    d.content.skills = [{ id: 's1', name: 'Core', skills: ['Kubernetes', 'Terraform'] }];
+    const text = resumeSearchText(d.content);
+    expect(text).toContain('jordan fox');
+    expect(text).toContain('kubernetes');
   });
 });
